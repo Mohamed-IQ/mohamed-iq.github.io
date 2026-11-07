@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark">
 <head>
@@ -1462,4 +1461,963 @@
         function loadDevicePreset(key) {
             try {
                 activePresetKey = key;
-                const d = devicePresets[key] || devicePresets.iphone_samsun
+                const d = devicePresets[key] || devicePresets.iphone_samsung;
+                document.getElementById('inputDeviceA').value = d.devA;
+                document.getElementById('inputDeviceB').value = d.devB;
+                renderComparator(d);
+            } catch (err) {
+                console.warn('Preset load error:', err);
+            }
+        }
+
+        function runCustomDeviceCompare() {
+            try {
+                const devA = document.getElementById('inputDeviceA').value.trim() || "iPhone 17 Pro Max";
+                const devB = document.getElementById('inputDeviceB').value.trim() || "Samsung S26 Ultra";
+                renderComparator({
+                    devA,
+                    priceA: lang === 'ar' ? "اضغط للسعر الحي" : "Check Live Price",
+                    devB,
+                    priceB: lang === 'ar' ? "اضغط للسعر الحي" : "Check Live Price",
+                    bars: [
+                        { ar: "الأداء والسرعة", en: "Speed & Performance", a: 93, b: 91 },
+                        { ar: "الجودة والتصميم", en: "Build & Design", a: 90, b: 92 },
+                        { ar: "الاعتمادية والبطارية", en: "Battery & Reliability", a: 91, b: 89 },
+                        { ar: "القيمة مقابل السعر", en: "Value Score", a: 94, b: 88 }
+                    ],
+                    verdictAr: `يمكنك الآن مقارنة الأسعار الفعلية لكل من ${devA} و ${devB} مباشرة عبر المتاجر الرسمية بالأسفل لاختيار العرض الأنسب.`,
+                    verdictEn: `Compare real-time prices for both ${devA} and ${devB} directly across official merchant pages below.`
+                });
+            } catch (err) {
+                console.warn('Custom compare error:', err);
+            }
+        }
+
+        function renderComparator(d) {
+            document.getElementById('compTitleA').textContent = d.devA;
+            document.getElementById('compPriceA').textContent = d.priceA;
+            document.getElementById('compTitleB').textContent = d.devB;
+            document.getElementById('compPriceB').textContent = d.priceB;
+            document.getElementById('compVerdictText').textContent = lang === 'ar' ? d.verdictAr : d.verdictEn;
+
+            document.getElementById('storeLinkA').href = getAmazonAffiliateUrl(d.devA);
+            document.getElementById('storeLinkB').href = getAmazonAffiliateUrl(d.devB);
+
+            document.getElementById('specBarsContainer').innerHTML = d.bars.map(b => `
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1.5">
+                        <span class="font-mono text-cyan-400">${b.a}%</span>
+                        <span class="text-slate-200">${lang === 'ar' ? b.ar : b.en}</span>
+                        <span class="font-mono text-emerald-400">${b.b}%</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 h-2">
+                        <div class="bg-obsidian-950 rounded-full overflow-hidden flex justify-end">
+                            <div class="bg-cyan-400 h-full rounded-full" style="width:${b.a}%"></div>
+                        </div>
+                        <div class="bg-obsidian-950 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full rounded-full" style="width:${b.b}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const stores = [
+                {
+                    name: "Amazon Global",
+                    sub: lang === 'ar' ? "شحن دولي وضمان رسمي" : "Official Global Store",
+                    item: d.devA,
+                    url: getAmazonAffiliateUrl(d.devA),
+                    btnClass: "bg-cyan-500 hover:bg-cyan-400 text-obsidian-950"
+                },
+                {
+                    name: "Noon MENA",
+                    sub: lang === 'ar' ? "متجر الخليج ومصر" : "MENA Express Store",
+                    item: d.devB,
+                    url: `https://www.noon.com/uae-en/search/?q=${encodeURIComponent(d.devB)}`,
+                    btnClass: "bg-amber-500 hover:bg-amber-400 text-obsidian-950"
+                },
+                {
+                    name: "eBay International",
+                    sub: lang === 'ar' ? "صفقات عالمية ومجددة" : "Global & Certified Deals",
+                    item: d.devA,
+                    url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(d.devA)}`,
+                    btnClass: "bg-emerald-500 hover:bg-emerald-400 text-obsidian-950"
+                }
+            ];
+
+            document.getElementById('directStoresGrid').innerHTML = stores.map(s => `
+                <div class="p-3.5 rounded-2xl glass-panel-inner border border-white/10 hover:border-emerald-400/50 transition flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-extrabold text-white block">${s.name}</span>
+                        <span class="text-[11px] text-slate-400 block mb-1">${s.sub}</span>
+                        <p class="text-xs font-bold text-emerald-400 truncate">${s.item}</p>
+                    </div>
+                    <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="mt-3 block text-center py-2 px-3 rounded-xl ${s.btnClass} text-xs font-black transition">
+                        ${lang === 'ar' ? 'اذهب للمتجر الحقيقي ↗' : 'Open Official Store ↗'}
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 3. COMPOUND ROI & LOAN CALCULATOR ====================
+        function switchFinanceSubMode(mode) {
+            const cBox = document.getElementById('finSubCompound');
+            const lBox = document.getElementById('finSubLoan');
+            const cBtn = document.getElementById('subBtnCompound');
+            const lBtn = document.getElementById('subBtnLoan');
+
+            if (mode === 'compound') {
+                cBox.classList.remove('hidden');
+                lBox.classList.add('hidden');
+                cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
+                lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
+                calculateROI();
+            } else {
+                lBox.classList.remove('hidden');
+                cBox.classList.add('hidden');
+                lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
+                cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
+                calculateLoan();
+            }
+        }
+
+        function calculateROI() {
+            try {
+                const init = parseFloat(document.getElementById('rngInvInit').value);
+                const monthly = parseFloat(document.getElementById('rngInvMonthly').value);
+                const rate = parseFloat(document.getElementById('rngInvRate').value) / 100;
+                const yrs = parseInt(document.getElementById('rngInvYears').value);
+
+                document.getElementById('valInvInit').textContent = `$${init.toLocaleString()}`;
+                document.getElementById('valInvMonthly').textContent = `$${monthly.toLocaleString()}`;
+                document.getElementById('valInvRate').textContent = `${Math.round(rate * 100)}%`;
+                document.getElementById('valInvYears').textContent = lang === 'ar' ? `${yrs} سنوات` : `${yrs} Yrs`;
+
+                const mRate = rate / 12;
+                let wealth = init;
+                let paid = init;
+                const labels = ['0'];
+                const wSeries = [init];
+                const pSeries = [init];
+
+                for (let y = 1; y <= yrs; y++) {
+                    for (let m = 1; m <= 12; m++) {
+                        wealth = (wealth + monthly) * (1 + mRate);
+                        paid += monthly;
+                    }
+                    labels.push(`${y}Y`);
+                    wSeries.push(Math.round(wealth));
+                    pSeries.push(Math.round(paid));
+                }
+
+                document.getElementById('outInvFuture').textContent = `$${Math.round(wealth).toLocaleString()}`;
+                document.getElementById('outInvPrincipal').textContent = `$${Math.round(paid).toLocaleString()}`;
+                document.getElementById('outInvProfit').textContent = `+$${Math.round(wealth - paid).toLocaleString()}`;
+
+                const ctx = document.getElementById('roiGrowthChart');
+                if (!ctx || typeof Chart === 'undefined') return;
+                if (roiChartObj) roiChartObj.destroy();
+
+                roiChartObj = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: lang === 'ar' ? 'الثروة المركبة' : 'Compound Wealth',
+                                data: wSeries,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: lang === 'ar' ? 'رأس المال' : 'Principal',
+                                data: pSeries,
+                                borderColor: '#06b6d4',
+                                borderDash: [4, 4],
+                                fill: false,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 10 } } } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn('ROI calc error:', err);
+            }
+        }
+
+        function shareROIPlan() {
+            const f = document.getElementById('outInvFuture').textContent;
+            const y = document.getElementById('valInvYears').textContent;
+            const txt = lang === 'ar'
+                ? `خطتي الاستثمارية عبر SmartVal Ultra: الوصول إلى ${f} خلال ${y}! جرب الحاسبة الآن.`
+                : `My SmartVal Ultra Wealth Plan: Reaching ${f} in ${y}! Try the calculator now.`;
+            copyText(txt, lang === 'ar' ? 'تم نسخ خطتك لمشاركتها!' : 'Wealth plan copied!');
+        }
+
+        function calculateLoan() {
+            try {
+                const price = parseFloat(document.getElementById('rngLoanPrice').value);
+                let down = parseFloat(document.getElementById('rngLoanDown').value);
+                if (down >= price) {
+                    down = price - 500;
+                    document.getElementById('rngLoanDown').value = down;
+                }
+                const apr = parseFloat(document.getElementById('rngLoanApr').value);
+                const mos = parseInt(document.getElementById('rngLoanMos').value);
+
+                const principal = Math.max(0, price - down);
+                const mRate = (apr / 100) / 12;
+                const mPay = mRate === 0 ? (principal / mos) : (principal * mRate) / (1 - Math.pow(1 + mRate, -mos));
+
+                document.getElementById('valLoanPrice').textContent = `$${price.toLocaleString()}`;
+                document.getElementById('valLoanDown').textContent = `$${down.toLocaleString()}`;
+                document.getElementById('valLoanApr').textContent = `${apr}%`;
+                document.getElementById('valLoanMos').textContent = lang === 'ar' ? `${mos} شهر` : `${mos} mos`;
+
+                document.getElementById('outMonthlyPay').textContent = `$${mPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('outNetLoan').textContent = `$${principal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('outTotalInt').textContent = `$${((mPay * mos) - principal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            } catch (err) {
+                console.warn('Loan calc error:', err);
+            }
+        }
+
+        // ==================== 4. REAL HTML5 CANVAS INTERACTIVE ARCADE GAMES ====================
+        let activeArcadeGame = 'runner';
+
+        function selectArcadeGame(gameKey) {
+            try {
+                activeArcadeGame = gameKey;
+                document.querySelectorAll('.arcade-game-box').forEach(b => b.classList.add('hidden'));
+                document.querySelectorAll('.arcade-select-btn').forEach(btn => {
+                    btn.className = "arcade-select-btn py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs sm:text-sm font-bold transition";
+                });
+                document.getElementById(`game-box-${gameKey}`).classList.remove('hidden');
+                document.getElementById(`gbtn-${gameKey}`).className = "arcade-select-btn py-2.5 px-3 rounded-xl bg-purple-600 text-white text-xs sm:text-sm font-extrabold transition shadow-lg shadow-purple-600/20";
+
+                if (gameKey === 'runner') initRunnerCanvas();
+                if (gameKey === 'snake') initSnakeCanvas();
+                if (gameKey === 'breakout') initBreakoutCanvas();
+            } catch (err) {
+                console.warn('Arcade select error:', err);
+            }
+        }
+
+        // ---------- GAME 1: CYBER RUNNER ----------
+        let runnerState = {
+            running: false,
+            gameOver: false,
+            score: 0,
+            best: 0,
+            playerY: 0,
+            velY: 0,
+            gravity: 0.75,
+            jumpForce: -12.5,
+            obstacles: [],
+            speed: 5.5,
+            frameId: null
+        };
+        try { runnerState.best = parseInt(localStorage.getItem('sv_best_runner') || '0'); } catch (e) {}
+
+        function initRunnerCanvas() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 560;
+            document.getElementById('runnerBestDisplay').textContent = runnerState.best;
+            drawRunnerIdle();
+        }
+
+        function drawRunnerIdle() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const groundY = canvas.height - 32;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(45, groundY - 34, 28, 34);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(62, groundY - 28, 6, 6);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 15px Cairo, Inter, sans-serif';
+            ctx.textAlign = 'center';
+            const msg = runnerState.gameOver
+                ? (lang === 'ar' ? `انتهت اللعبة! النتيجة: ${Math.floor(runnerState.score)} — اضغط للإعادة` : `Game Over! Score: ${Math.floor(runnerState.score)} — Tap to Retry`)
+                : (lang === 'ar' ? 'اضغط هنا أو زر القفز للانطلاق!' : 'Tap Canvas or Jump Button to Start!');
+            ctx.fillText(msg, canvas.width / 2, canvas.height / 2 - 10);
+        }
+
+        function triggerRunnerJump() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            if (canvas.width < 100) canvas.width = canvas.parentElement.clientWidth || 560;
+            const groundY = canvas.height - 32;
+
+            if (!runnerState.running) {
+                runnerState.running = true;
+                runnerState.gameOver = false;
+                runnerState.score = 0;
+                runnerState.speed = 5.5;
+                runnerState.obstacles = [];
+                runnerState.playerY = groundY - 34;
+                runnerState.velY = runnerState.jumpForce;
+                if (runnerState.frameId) cancelAnimationFrame(runnerState.frameId);
+                loopRunner();
+                return;
+            }
+
+            if (runnerState.playerY >= groundY - 35) {
+                runnerState.velY = runnerState.jumpForce;
+            }
+        }
+
+        function loopRunner() {
+            if (!runnerState.running) return;
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const groundY = canvas.height - 32;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            runnerState.velY += runnerState.gravity;
+            runnerState.playerY += runnerState.velY;
+            if (runnerState.playerY > groundY - 34) {
+                runnerState.playerY = groundY - 34;
+                runnerState.velY = 0;
+            }
+
+            if (runnerState.obstacles.length === 0 || runnerState.obstacles[runnerState.obstacles.length - 1].x < canvas.width - (210 + Math.random() * 160)) {
+                const h = 26 + Math.random() * 20;
+                runnerState.obstacles.push({ x: canvas.width + 20, w: 18, h });
+            }
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(45, runnerState.playerY, 28, 34);
+            ctx.fillStyle = '#04070d';
+            ctx.fillRect(62, runnerState.playerY + 6, 6, 6);
+
+            for (let i = runnerState.obstacles.length - 1; i >= 0; i--) {
+                const obs = runnerState.obstacles[i];
+                obs.x -= runnerState.speed;
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillRect(obs.x, groundY - obs.h, obs.w, obs.h);
+
+                if (45 < obs.x + obs.w - 3 && 45 + 25 > obs.x + 3 && runnerState.playerY + 32 > groundY - obs.h) {
+                    runnerState.running = false;
+                    runnerState.gameOver = true;
+                    const finalScore = Math.floor(runnerState.score);
+                    if (finalScore > runnerState.best) {
+                        runnerState.best = finalScore;
+                        try { localStorage.setItem('sv_best_runner', runnerState.best); } catch (e) {}
+                        document.getElementById('runnerBestDisplay').textContent = runnerState.best;
+                    }
+                    drawRunnerIdle();
+                    return;
+                }
+
+                if (obs.x + obs.w < 0) runnerState.obstacles.splice(i, 1);
+            }
+
+            runnerState.score += 0.25;
+            runnerState.speed += 0.0015;
+            document.getElementById('runnerScoreDisplay').textContent = Math.floor(runnerState.score);
+            runnerState.frameId = requestAnimationFrame(loopRunner);
+        }
+
+        // ---------- GAME 2: NEON SNAKE ----------
+        let snakeState = {
+            grid: 16,
+            cells: [],
+            dx: 1,
+            dy: 0,
+            nextDx: 1,
+            nextDy: 0,
+            food: { x: 10, y: 8 },
+            score: 0,
+            best: 0,
+            timer: null,
+            running: false
+        };
+        try { snakeState.best = parseInt(localStorage.getItem('sv_best_snake') || '0'); } catch (e) {}
+
+        function initSnakeCanvas() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 340;
+            document.getElementById('snakeBestDisplay').textContent = snakeState.best;
+            drawSnakeStatic();
+        }
+
+        function drawSnakeStatic() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 14px Cairo, Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(lang === 'ar' ? 'اضغط PLAY لبدء ثعبان النيون 🐍' : 'Tap PLAY to Start Neon Snake 🐍', canvas.width / 2, canvas.height / 2);
+        }
+
+        function startSnakeGame() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 340;
+            if (snakeState.timer) clearInterval(snakeState.timer);
+
+            snakeState.cells = [{ x: 5, y: 7 }, { x: 4, y: 7 }, { x: 3, y: 7 }];
+            snakeState.dx = 1;
+            snakeState.dy = 0;
+            snakeState.nextDx = 1;
+            snakeState.nextDy = 0;
+            snakeState.score = 0;
+            snakeState.running = true;
+            document.getElementById('snakeScoreDisplay').textContent = '0';
+            spawnSnakeFood(canvas);
+
+            snakeState.timer = setInterval(() => stepSnake(canvas), 115);
+        }
+
+        function setSnakeDir(nx, ny) {
+            if (!snakeState.running) {
+                startSnakeGame();
+                return;
+            }
+            if (nx !== -snakeState.dx && ny !== -snakeState.dy) {
+                snakeState.nextDx = nx;
+                snakeState.nextDy = ny;
+            }
+        }
+
+        function spawnSnakeFood(canvas) {
+            const cols = Math.max(8, Math.floor(canvas.width / snakeState.grid));
+            const rows = Math.max(8, Math.floor(canvas.height / snakeState.grid));
+            snakeState.food = {
+                x: Math.floor(Math.random() * (cols - 1)),
+                y: Math.floor(Math.random() * (rows - 1))
+            };
+        }
+
+        function stepSnake(canvas) {
+            const ctx = canvas.getContext('2d');
+            const g = snakeState.grid;
+            const cols = Math.max(8, Math.floor(canvas.width / g));
+            const rows = Math.max(8, Math.floor(canvas.height / g));
+
+            snakeState.dx = snakeState.nextDx;
+            snakeState.dy = snakeState.nextDy;
+
+            const head = {
+                x: (snakeState.cells[0].x + snakeState.dx + cols) % cols,
+                y: (snakeState.cells[0].y + snakeState.dy + rows) % rows
+            };
+
+            if (snakeState.cells.some(c => c.x === head.x && c.y === head.y)) {
+                clearInterval(snakeState.timer);
+                snakeState.running = false;
+                if (snakeState.score > snakeState.best) {
+                    snakeState.best = snakeState.score;
+                    try { localStorage.setItem('sv_best_snake', snakeState.best); } catch (e) {}
+                    document.getElementById('snakeBestDisplay').textContent = snakeState.best;
+                }
+                showToast(lang === 'ar' ? `انتهت الجولة! النقاط: ${snakeState.score}` : `Snake Game Over! Score: ${snakeState.score}`);
+                drawSnakeStatic();
+                return;
+            }
+
+            snakeState.cells.unshift(head);
+
+            if (head.x === snakeState.food.x && head.y === snakeState.food.y) {
+                snakeState.score += 10;
+                document.getElementById('snakeScoreDisplay').textContent = snakeState.score;
+                spawnSnakeFood(canvas);
+            } else {
+                snakeState.cells.pop();
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(snakeState.food.x * g + g / 2, snakeState.food.y * g + g / 2, g / 2.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            snakeState.cells.forEach((cell, idx) => {
+                ctx.fillStyle = idx === 0 ? '#10b981' : '#059669';
+                ctx.fillRect(cell.x * g + 1, cell.y * g + 1, g - 2, g - 2);
+            });
+        }
+
+        // ---------- GAME 3: NEON BREAKOUT ----------
+        let brkState = {
+            running: false,
+            frameId: null,
+            score: 0,
+            best: 0,
+            paddleX: 120,
+            paddleW: 84,
+            ballX: 160,
+            ballY: 180,
+            vx: 3.4,
+            vy: -3.4,
+            bricks: []
+        };
+        try { brkState.best = parseInt(localStorage.getItem('sv_best_brk') || '0'); } catch (e) {}
+
+        function initBreakoutCanvas() {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 500;
+            document.getElementById('breakoutBestDisplay').textContent = brkState.best;
+            startBreakoutGame();
+        }
+
+        function nudgeBreakoutPaddle(delta) {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            brkState.paddleX = Math.max(0, Math.min(canvas.width - brkState.paddleW, brkState.paddleX + delta));
+        }
+
+        function startBreakoutGame() {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 500;
+            if (brkState.frameId) cancelAnimationFrame(brkState.frameId);
+
+            brkState.score = 0;
+            brkState.running = true;
+            brkState.paddleX = (canvas.width - brkState.paddleW) / 2;
+            brkState.ballX = canvas.width / 2;
+            brkState.ballY = canvas.height - 55;
+            brkState.vx = 3.5;
+            brkState.vy = -3.5;
+            document.getElementById('breakoutScoreDisplay').textContent = '0';
+
+            const cols = 6, rows = 4, pad = 8;
+            const bW = (canvas.width - pad * (cols + 1)) / cols;
+            const colors = ['#a855f7', '#06b6d4', '#10b981', '#f59e0b'];
+            brkState.bricks = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    brkState.bricks.push({
+                        x: pad + c * (bW + pad),
+                        y: 24 + r * 24,
+                        w: bW,
+                        h: 16,
+                        color: colors[r % colors.length],
+                        alive: true
+                    });
+                }
+            }
+            loopBreakout();
+        }
+
+        function loopBreakout() {
+            if (!brkState.running) return;
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let aliveCount = 0;
+            brkState.bricks.forEach(b => {
+                if (!b.alive) return;
+                aliveCount++;
+                ctx.fillStyle = b.color;
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+
+                if (brkState.ballX > b.x && brkState.ballX < b.x + b.w && brkState.ballY > b.y && brkState.ballY < b.y + b.h) {
+                    brkState.vy = -brkState.vy;
+                    b.alive = false;
+                    brkState.score += 15;
+                    document.getElementById('breakoutScoreDisplay').textContent = brkState.score;
+                }
+            });
+
+            if (aliveCount === 0) {
+                brkState.running = false;
+                showToast(lang === 'ar' ? 'بطل! حطمت جميع الكتل!' : 'Victory! All Bricks Cleared!');
+                return;
+            }
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(brkState.paddleX, canvas.height - 20, brkState.paddleW, 10);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(brkState.ballX, brkState.ballY, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            brkState.ballX += brkState.vx;
+            brkState.ballY += brkState.vy;
+
+            if (brkState.ballX < 7 || brkState.ballX > canvas.width - 7) brkState.vx = -brkState.vx;
+            if (brkState.ballY < 7) brkState.vy = -brkState.vy;
+
+            if (brkState.ballY > canvas.height - 27 && brkState.ballX > brkState.paddleX && brkState.ballX < brkState.paddleX + brkState.paddleW) {
+                brkState.vy = -Math.abs(brkState.vy);
+            } else if (brkState.ballY > canvas.height) {
+                brkState.running = false;
+                if (brkState.score > brkState.best) {
+                    brkState.best = brkState.score;
+                    try { localStorage.setItem('sv_best_brk', brkState.best); } catch (e) {}
+                    document.getElementById('breakoutBestDisplay').textContent = brkState.best;
+                }
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 15px Cairo, Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(lang === 'ar' ? 'سقطت الكرة! اضغط إعادة اللعب' : 'Ball Dropped! Tap Restart', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            brkState.frameId = requestAnimationFrame(loopBreakout);
+        }
+
+        // ---------- GAME 4: SMART TIC-TAC-TOE AI ----------
+        let xoBoard = Array(9).fill('');
+        let xoActive = true;
+        let xoWins = 0;
+        let xoLosses = 0;
+        const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function playXoCell(idx) {
+            if (!xoActive || xoBoard[idx] !== '') return;
+            xoBoard[idx] = 'X';
+            renderXoBoard();
+            if (checkXoEnd('X')) return;
+
+            xoActive = false;
+            document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'الذكاء الاصطناعي يفكر...' : 'AI Thinking...';
+
+            setTimeout(() => {
+                const aiMove = chooseBestAiMove();
+                if (aiMove !== -1) {
+                    xoBoard[aiMove] = 'O';
+                    renderXoBoard();
+                    if (checkXoEnd('O')) return;
+                }
+                xoActive = true;
+                document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'دورك الآن (X)' : 'Your Turn (X)';
+            }, 300);
+        }
+
+        function chooseBestAiMove() {
+            for (const [a,b,c] of winLines) {
+                const line = [xoBoard[a], xoBoard[b], xoBoard[c]];
+                if (line.filter(v => v === 'O').length === 2 && line.includes('')) return [a,b,c][line.indexOf('')];
+            }
+            for (const [a,b,c] of winLines) {
+                const line = [xoBoard[a], xoBoard[b], xoBoard[c]];
+                if (line.filter(v => v === 'X').length === 2 && line.includes('')) return [a,b,c][line.indexOf('')];
+            }
+            if (xoBoard[4] === '') return 4;
+            const empty = xoBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
+            return empty.length ? empty[Math.floor(Math.random() * empty.length)] : -1;
+        }
+
+        function checkXoEnd(mark) {
+            const won = winLines.some(([a,b,c]) => xoBoard[a] === mark && xoBoard[b] === mark && xoBoard[c] === mark);
+            if (won) {
+                xoActive = false;
+                if (mark === 'X') {
+                    xoWins++;
+                    document.getElementById('xoWinCount').textContent = xoWins;
+                    document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🎉 مبروك! فزت على الذكاء الاصطناعي!' : '🎉 You Beat the AI!';
+                } else {
+                    xoLosses++;
+                    document.getElementById('xoLossCount').textContent = xoLosses;
+                    document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🤖 فاز الذكاء الاصطناعي! جرب مجدداً' : '🤖 AI Wins! Try Again';
+                }
+                return true;
+            }
+            if (!xoBoard.includes('')) {
+                xoActive = false;
+                document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🤝 تعادل! جولة متكافئة' : '🤝 Draw Match!';
+                return true;
+            }
+            return false;
+        }
+
+        function renderXoBoard() {
+            document.querySelectorAll('.xo-cell').forEach((btn, i) => {
+                btn.textContent = xoBoard[i];
+                btn.className = `xo-cell h-20 rounded-2xl bg-obsidian-900 border border-white/15 font-mono text-3xl font-black transition ${xoBoard[i] === 'X' ? 'text-cyan-400' : 'text-amber-400'}`;
+            });
+        }
+
+        function resetXoGame() {
+            xoBoard = Array(9).fill('');
+            xoActive = true;
+            renderXoBoard();
+            document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'دورك الآن (X)' : 'Your Turn (X)';
+        }
+
+        function bindArcadeEvents() {
+            const rCanvas = document.getElementById('runnerCanvas');
+            if (rCanvas) {
+                rCanvas.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    triggerRunnerJump();
+                });
+            }
+
+            const bCanvas = document.getElementById('breakoutCanvas');
+            if (bCanvas) {
+                const movePaddle = (clientX) => {
+                    const rect = bCanvas.getBoundingClientRect();
+                    const x = clientX - rect.left;
+                    brkState.paddleX = Math.max(0, Math.min(bCanvas.width - brkState.paddleW, x - brkState.paddleW / 2));
+                };
+                bCanvas.addEventListener('pointermove', (e) => movePaddle(e.clientX));
+                bCanvas.addEventListener('touchmove', (e) => {
+                    if (e.touches[0]) movePaddle(e.touches[0].clientX);
+                }, { passive: true });
+            }
+
+            window.addEventListener('keydown', (e) => {
+                if (activeArcadeGame === 'runner' && e.code === 'Space') {
+                    e.preventDefault();
+                    triggerRunnerJump();
+                } else if (activeArcadeGame === 'snake') {
+                    if (e.key === 'ArrowUp') { e.preventDefault(); setSnakeDir(0, -1); }
+                    if (e.key === 'ArrowDown') { e.preventDefault(); setSnakeDir(0, 1); }
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); setSnakeDir(-1, 0); }
+                    if (e.key === 'ArrowRight') { e.preventDefault(); setSnakeDir(1, 0); }
+                } else if (activeArcadeGame === 'breakout') {
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); nudgeBreakoutPaddle(-35); }
+                    if (e.key === 'ArrowRight') { e.preventDefault(); nudgeBreakoutPaddle(35); }
+                }
+            });
+        }
+
+        // ==================== 5. STEALTH OWNER ADMIN PORTAL ====================
+        function checkStealthTrigger() {
+            if (window.location.hash === '#admin-portal-2026') {
+                openStealthAdmin();
+            }
+        }
+
+        window.addEventListener('hashchange', checkStealthTrigger);
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                openStealthAdmin();
+            }
+        });
+
+        function openStealthAdmin() {
+            document.getElementById('stealthAdminModal').classList.remove('hidden');
+        }
+
+        function closeStealthAdmin() {
+            document.getElementById('stealthAdminModal').classList.add('hidden');
+            if (window.location.hash === '#admin-portal-2026') {
+                history.replaceState(null, null, ' ');
+            }
+        }
+
+        function authenticateStealthOwner() {
+            const entered = document.getElementById('stealthPassInput').value;
+            if (entered === stealthCfg.password) {
+                document.getElementById('stealthAuthStep').classList.add('hidden');
+                document.getElementById('stealthDashboardStep').classList.remove('hidden');
+                document.getElementById('ownerAmazonTag').value = stealthCfg.amazonTag;
+                document.getElementById('ownerAdCode').value = stealthCfg.adCode;
+            } else {
+                showToast(lang === 'ar' ? 'كلمة المرور غير صحيحة!' : 'Invalid Master Password!');
+            }
+        }
+
+        function saveStealthSettings() {
+            stealthCfg.amazonTag = document.getElementById('ownerAmazonTag').value.trim();
+            stealthCfg.adCode = document.getElementById('ownerAdCode').value.trim();
+            const newPass = document.getElementById('ownerNewPass').value.trim();
+
+            try {
+                localStorage.setItem('sv_ultra_amz_tag', stealthCfg.amazonTag);
+                localStorage.setItem('sv_ultra_ad_html', stealthCfg.adCode);
+                if (newPass.length >= 6) {
+                    stealthCfg.password = newPass;
+                    localStorage.setItem('sv_ultra_pass', newPass);
+                }
+            } catch (e) {}
+
+            applyOwnerMonetization();
+            closeStealthAdmin();
+            showToast(lang === 'ar' ? 'تم حفظ وتفعيل إعدادات المالك بنجاح!' : 'Owner settings saved & activated!');
+        }
+
+        function resetStealthSettings() {
+            try {
+                localStorage.removeItem('sv_ultra_amz_tag');
+                localStorage.removeItem('sv_ultra_ad_html');
+                localStorage.removeItem('sv_ultra_pass');
+            } catch (e) {}
+            stealthCfg = { password: DEFAULT_MASTER_PASS, amazonTag: '', adCode: '' };
+            showToast(lang === 'ar' ? 'تمت استعادة الإعدادات الافتراضية' : 'Settings reset');
+        }
+
+        function applyOwnerMonetization() {
+            loadDevicePreset(activePresetKey);
+            if (stealthCfg.adCode) {
+                const topAd = document.getElementById('ad-slot-top');
+                if (topAd) topAd.innerHTML = stealthCfg.adCode;
+            }
+        }
+
+        // ==================== NAVIGATION, LANGUAGE & MODALS ====================
+        function switchTab(tabId) {
+            try {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.nav-tab-btn').forEach(b => {
+                    b.className = "nav-tab-btn flex items-center justify-center gap-2 py-3.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all text-slate-300 hover:bg-white/5 relative";
+                });
+
+                document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+                const active = document.getElementById(`btn-tab-${tabId}`);
+                active.className = "nav-tab-btn flex items-center justify-center gap-2 py-3.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-obsidian-950 shadow-lg shadow-emerald-500/20 relative";
+
+                if (tabId === 'invest') calculateROI();
+                if (tabId === 'arcade') selectArcadeGame(activeArcadeGame);
+            } catch (err) {
+                console.warn('Tab switch error:', err);
+            }
+        }
+
+        function toggleLanguage() {
+            lang = lang === 'ar' ? 'en' : 'ar';
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.getElementById('langSwitchText').textContent = lang === 'ar' ? 'English' : 'عربي';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang][key]) el.textContent = i18n[lang][key];
+            });
+
+            const seoBody = document.getElementById('seoRichBody');
+            if (seoBody) {
+                seoBody.innerHTML = lang === 'ar'
+                    ? `<p>تجمع <strong>منصة مُقارن (SmartVal Ultra)</strong> بين دقة البيانات المالية الحية وسهولة الاستخدام للمستثمرين والمتسوقين في الوطن العربي والعالم. بفضل الاتصال المباشر مع أسواق المال العالمية، يمكنك متابعة <strong>سعر الدولار اليوم مقابل الدينار العراقي والريال السعودي والدرهم الإماراتي</strong>، بالإضافة إلى <strong>أسعار الذهب عيار 24 وعيار 21</strong> والعملات الرقمية مثل البيتكوين والإيثيريوم لحظة بلحظة.</p><p>وعند رغبتك في شراء هاتف ذكي أو حاسوب محمول جديد، يوفر لك <strong>مقارن الأجهزة بالذكاء الاصطناعي</strong> تحليلاً دقيقاً للأداء والكاميرا والبطارية مع روابط مباشرة لصفحات الشراء الرسمية في <strong>Amazon</strong> و<strong>Noon</strong> و<strong>eBay</strong>، إلى جانب صالة ألعاب متصفح مجانية ومفتوحة للجميع.</p>`
+                    : `<p><strong>SmartVal Ultra</strong> combines live institutional market feeds with intuitive consumer tools for investors and shoppers worldwide. Connected directly to global exchanges, track <strong>live USD, EUR, SAR, AED, and IQD forex rates</strong> alongside <strong>24K/21K Gold</strong>, Bitcoin, and Ethereum in real time.</p><p>Before buying your next flagship device, use our <strong>AI Device Comparator</strong> for deep performance insights and direct official merchant links on <strong>Amazon</strong>, <strong>Noon</strong>, and <strong>eBay</strong>, plus free instant browser arcade games.</p>`;
+            }
+
+            loadDevicePreset(activePresetKey);
+            calculateROI();
+            calculateLoan();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function openLegalModal(type) {
+            const data = {
+                about: {
+                    arT: "من نحن - منصة مُقارن SmartVal Ultra",
+                    enT: "About SmartVal Ultra",
+                    arB: "<p>منصة <strong>مُقارن (SmartVal Ultra)</strong> هي بوابة رقمية متطورة تجمع بين البيانات المالية الحية، مقارنات التكنولوجيا بالذكاء الاصطناعي، والألعاب التفاعلية المفتوحة لخدمة المستخدمين في العالم العربي والعالم.</p>",
+                    enB: "<p><strong>SmartVal Ultra</strong> is an advanced digital platform combining live financial feeds, AI tech comparisons, and open browser gaming for a global audience.</p>"
+                },
+                privacy: {
+                    arT: "سياسة الخصوصية (Privacy Policy)",
+                    enT: "Privacy Policy (AdSense Compliant)",
+                    arB: "<p>نحن نحترم خصوصيتك بالكامل. تستخدم منصتنا شبكات إعلانية معتمدة مثل <strong>Google AdSense</strong> والتي قد تعتمد على ملفات تعريف الارتباط (Cookies) لعرض إعلانات مخصصة وملائمة لاهتمامات الزوار.</p>",
+                    enB: "<p>We respect user privacy. Our platform partners with third-party advertising networks including <strong>Google AdSense</strong>, which may use cookies to serve relevant advertisements.</p>"
+                },
+                terms: {
+                    arT: "شروط الاستخدام",
+                    enT: "Terms of Use",
+                    arB: "<p>البيانات المالية والأسعار المعروضة مستمدة من مصادر الأسواق الحية لأغراض المعلومات والتحليل، وروابط المتاجر تنقلك مباشرة إلى المواقع الرسمية للبائعين.</p>",
+                    enB: "<p>Market rates are sourced from live feeds for informational purposes. Store links redirect directly to official merchant platforms.</p>"
+                },
+                contact: {
+                    arT: "اتصل بنا",
+                    enT: "Contact Us",
+                    arB: "<p>للتواصل التجاري والرعايات الإعلانية: <strong>partnerships@smartval-ultra.com</strong></p>",
+                    enB: "<p>For corporate partnerships and ad inquiries: <strong>partnerships@smartval-ultra.com</strong></p>"
+                }
+            };
+            document.getElementById('legalModalTitle').textContent = lang === 'ar' ? data[type].arT : data[type].enT;
+            document.getElementById('legalModalBody').innerHTML = lang === 'ar' ? data[type].arB : data[type].enB;
+            openModal('legalModal');
+        }
+
+        function submitCorporateAd(e) {
+            e.preventDefault();
+            closeModal('advertiseModal');
+            showToast(lang === 'ar' ? 'تم استلام طلب الرعاية الإعلانية بنجاح!' : 'Corporate ad inquiry submitted!');
+        }
+
+        function copyElementValue(id) {
+            const val = document.getElementById(id).textContent.trim();
+            copyText(val, lang === 'ar' ? `تم النسخ: ${val}` : `Copied: ${val}`);
+        }
+
+        function copyText(str, msg) {
+            const inp = document.createElement('input');
+            inp.value = str;
+            document.body.appendChild(inp);
+            inp.select();
+            document.execCommand('copy');
+            document.body.removeChild(inp);
+            showToast(msg);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toastAlert');
+            document.getElementById('toastAlertMsg').textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3200);
+        }
+
+        // ==================== BULLETPROOF INITIALIZATION ====================
+        function bootSmartValUltra() {
+            try { checkStealthTrigger(); } catch (e) {}
+            try { recalcLiveCurrency(); } catch (e) {}
+            try { fetchRealMarketData(false); } catch (e) {}
+            try { startLiveMarketMicroTicks(); } catch (e) {}
+            try { applyOwnerMonetization(); } catch (e) {}
+            try { calculateROI(); } catch (e) {}
+            try { calculateLoan(); } catch (e) {}
+            try { bindArcadeEvents(); } catch (e) {}
+            try { initRunnerCanvas(); } catch (e) {}
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootSmartValUltra);
+        } else {
+            bootSmartValUltra();
+        }
+        window.addEventListener('load', bootSmartValUltra);
+    </script>
+</body>
+</html>
