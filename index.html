@@ -231,7 +231,7 @@
                 <span class="text-slate-400">ETH/USD: <strong id="tick-eth" class="text-cyan-400">$3,185</strong></span>
                 <span class="text-slate-400">SOL/USD: <strong id="tick-sol" class="text-purple-400">$198.40</strong></span>
                 <span class="text-slate-400">GOLD 24K/g: <strong id="tick-gold" class="text-amber-400">$86.80</strong></span>
-                <span class="text-slate-400">USD/IQD: <strong id="tick-iqd" class="text-white">1,310</strong></span>
+                <span class="text-slate-400">USD/IQD: <strong id="tick-iqd" class="text-white">1,530</strong></span>
                 <span class="text-slate-400">USD/SAR: <strong id="tick-sar" class="text-white">3.75</strong></span>
                 <span class="text-slate-400">USD/EUR: <strong id="tick-eur" class="text-white">0.92</strong></span>
                 <span class="text-slate-400">USD/EGP: <strong id="tick-egp" class="text-white">49.25</strong></span>
@@ -265,7 +265,7 @@
                 الجيل الجديد من التحليل المالي والمقارنات الذكية
             </h1>
             <p class="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto" data-i18n="heroSubtitle">
-                تتبع أسعار الذهب والعملات والكريبتو لحظياً من المصادر العالمية، قارن الأجهزة مع روابط الشراء الحقيقية، واستمتع بصالة الألعاب المفتوحة للجميع.
+                تتبع أسعار الذهب والعملات والكريبتو لحظياً من المصادر العالمية، قارن الأجهزة مع روابط الشراء الحقيقية، واستمتعصالة الألعاب المفتوحة للجميع.
             </p>
         </div>
 
@@ -355,7 +355,7 @@
                         <div class="sm:col-span-5 space-y-2">
                             <label class="text-xs font-bold text-slate-400 block" data-i18n="resultLbl">القيمة الحقيقية المقابلة</label>
                             <div id="currOutputDisplay" class="w-full px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-lg font-mono font-extrabold text-emerald-400 truncate">
-                                131,000 IQD
+                                153,000 IQD
                             </div>
                             <select id="currToSelect" onchange="recalcLiveCurrency()" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-slate-200 focus:outline-none focus:border-emerald-400">
                                 <option value="IQD" selected>🇮🇶 IQD - دينار عراقي</option>
@@ -378,7 +378,7 @@
                     <div class="mt-4 flex flex-wrap items-center justify-between gap-3 bg-obsidian-950/80 border border-white/10 px-4 py-3 rounded-2xl">
                         <div class="text-xs sm:text-sm font-semibold">
                             <span class="text-slate-400" data-i18n="liveRateLbl">سعر الصرف الفعلي الآن:</span>
-                            <span id="unitRateStrip" class="font-mono text-emerald-400 font-bold mx-1.5">1 USD = 1,310 IQD</span>
+                            <span id="unitRateStrip" class="font-mono text-emerald-400 font-bold mx-1.5">1 USD = 1,530 IQD</span>
                         </div>
                         <button onclick="copyElementValue('currOutputDisplay')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white flex items-center gap-1.5 transition">
                             <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -481,16 +481,17 @@
                     </div>
                 </section>
 
-                <!-- ==================== MODULE 3: COMPOUND WEALTH & LOAN CALCULATOR ==================== -->
+                <!-- ==================== MODULE 3: COMPOUND WEALTH, LOAN & TIME-COST CALCULATOR ==================== -->
                 <section id="panel-invest" class="tab-panel hidden glass-card rounded-3xl p-5 sm:p-7">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
                         <div>
                             <h2 class="text-xl sm:text-2xl font-extrabold text-white" data-i18n="investTitle">حاسبة الثروة المركبة والتمويل الذكي</h2>
                             <p class="text-xs sm:text-sm text-slate-400 mt-0.5" data-i18n="investSub">خطط لمستقبلك المالي وشاهد منحنى نمو أرباحك المركبة أو احسب أقساطك بدقة</p>
                         </div>
-                        <div class="flex bg-obsidian-950 p-1 rounded-xl border border-white/10">
+                        <div class="flex flex-wrap bg-obsidian-950 p-1 rounded-xl border border-white/10 gap-1">
                             <button onclick="switchFinanceSubMode('compound')" id="subBtnCompound" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition" data-i18n="modeCompound">الاستثمار المركب</button>
                             <button onclick="switchFinanceSubMode('loan')" id="subBtnLoan" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition" data-i18n="modeLoan">حاسبة الأقساط</button>
+                            <button onclick="switchFinanceSubMode('timecost')" id="subBtnTimeCost" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition" data-i18n="modeTimeCost">⏳ القوة الشرائية</button>
                         </div>
                     </div>
 
@@ -604,6 +605,75 @@
                                     <span class="text-slate-400" data-i18n="totalInterestLbl">إجمالي الفوائد:</span>
                                     <strong id="outTotalInt" class="font-mono text-amber-400">$2,269.44</strong>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PURCHASING POWER & WORK HOURS CALCULATOR (VIRAL TOOL) -->
+                    <div id="finSubTimeCost" class="hidden grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                        <div class="md:col-span-6 space-y-3.5 glass-panel-inner p-4 rounded-2xl">
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcItemNameLbl">اسم المنتج (اختياري للمشاركة الفيروسية)</label>
+                                <input type="text" id="tcItemName" placeholder="iPhone 17 Pro Max, PlayStation 5..." class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-white focus:border-emerald-400 focus:outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <div class="col-span-2">
+                                    <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcPriceLbl">سعر المنتج</label>
+                                    <input type="number" id="tcItemPrice" value="1200" min="1" oninput="calculateTimeCost()" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 font-mono text-sm font-extrabold text-white focus:border-emerald-400 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcCurrLbl">العملة</label>
+                                    <select id="tcCurrency" onchange="calculateTimeCost()" class="w-full px-2.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 font-mono text-sm font-bold text-emerald-400 focus:border-emerald-400 focus:outline-none">
+                                        <option value="USD">USD ($)</option>
+                                        <option value="IQD">IQD (د.ع)</option>
+                                        <option value="SAR">SAR (ر.س)</option>
+                                        <option value="AED">AED (د.إ)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcIncomeLbl">دخلك الشهري الصافي</label>
+                                <input type="number" id="tcMonthlyIncome" value="1500" min="1" oninput="calculateTimeCost()" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 font-mono text-sm font-extrabold text-white focus:border-emerald-400 focus:outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcHoursLbl">ساعات العمل يومياً</label>
+                                    <input type="number" id="tcHoursDay" value="8" min="1" max="24" oninput="calculateTimeCost()" class="w-full px-3.5 py-2 rounded-xl bg-obsidian-900 border border-white/10 font-mono text-sm font-bold text-white">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="tcDaysLbl">أيام العمل شهرياً</label>
+                                    <input type="number" id="tcDaysMonth" value="26" min="1" max="31" oninput="calculateTimeCost()" class="w-full px-3.5 py-2 rounded-xl bg-obsidian-900 border border-white/10 font-mono text-sm font-bold text-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-6 space-y-4">
+                            <div class="p-5 rounded-2xl bg-gradient-to-br from-obsidian-900 to-slate-900 border border-amber-500/35">
+                                <span class="text-xs text-slate-400 block mb-1" data-i18n="tcResultTitle">التكلفة الحقيقية لهذا الشراء من عُمرك:</span>
+                                <div id="tcMainResult" class="text-2xl sm:text-3xl font-black text-amber-400 mb-3">20 يوم عمل و 6.4 ساعة</div>
+                                
+                                <div class="space-y-2 pt-3 border-t border-white/10 text-xs">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-400" data-i18n="tcHourlyRateLbl">قيمة ساعة عملك الفعلية:</span>
+                                        <strong id="tcHourlyWageOut" class="font-mono text-emerald-400 font-extrabold">$7.21 / hr</strong>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-400" data-i18n="tcTotalHoursLbl">إجمالي الساعات المطلوبة:</span>
+                                        <strong id="tcTotalHoursOut" class="font-mono text-white font-extrabold">166.4 hrs</strong>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-400" data-i18n="tcSalaryPctLbl">نسبة الاستهلاك من راتبك الشهري:</span>
+                                        <strong id="tcIncomePctOut" class="font-mono text-rose-400 font-extrabold">80.0%</strong>
+                                    </div>
+                                </div>
+
+                                <button onclick="shareTimeCostViral()" class="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-obsidian-950 text-xs font-black shadow-lg shadow-amber-500/20 transition active:scale-95" data-i18n="tcShareBtn">
+                                    مشاركة النتيجة الصادمة مع أصدقائك 🔥📤
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -773,7 +843,7 @@
                         </div>
                         <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
                             <span class="text-slate-300 font-sans font-bold">100 USD → IQD</span>
-                            <strong id="side-iqd" class="text-white text-sm">131,000 IQD</strong>
+                            <strong id="side-iqd" class="text-white text-sm">153,000 IQD</strong>
                         </div>
                     </div>
                 </div>
@@ -955,7 +1025,7 @@
         let liveRatesUSD = {
             USD: 1,
             EUR: 0.92,
-            IQD: 1310,
+            IQD: 1530,
             SAR: 3.75,
             AED: 3.6725,
             EGP: 49.25,
@@ -992,7 +1062,7 @@
                 reserveBannerCta: "احجز هذه المساحة الإعلانية ←",
                 heroPill: "بيانات أسواق حقيقية 100% • ذكاء اصطناعي • ترفيه مفتوح",
                 heroTitle: "الجيل الجديد من التحليل المالي والمقارنات الذكية",
-                heroSubtitle: "تتبع أسعار الذهب والعملات والكريبتو لحظياً من المصادر العالمية، قارن الأجهزة مع روابط الشراء الحقيقية، واستمتع بصالة الألعاب المفتوحة للجميع.",
+                heroSubtitle: "تتبع أسعار الذهب والعملات والكريبتو لحظياً من المصادر العالمية، قارن الأجهزة مع روابط الشراء الحقيقية، واستمتع صالة الألعاب المفتوحة للجميع.",
                 tabMarkets: "محول العملات والذهب",
                 tabComparator: "مقارن الأجهزة والمتاجر",
                 tabInvest: "حاسبة الاستثمار والأقساط",
@@ -1021,6 +1091,7 @@
                 investSub: "خطط لمستقبلك المالي وشاهد منحنى نمو أرباحك المركبة أو احسب أقساطك بدقة",
                 modeCompound: "الاستثمار المركب",
                 modeLoan: "حاسبة الأقساط",
+                modeTimeCost: "⏳ القوة الشرائية",
                 initCapLbl: "رأس المال الأولي ($)",
                 monthlyAddLbl: "الادخار الشهري ($)",
                 annualRetLbl: "العائد السنوي (%)",
@@ -1036,6 +1107,17 @@
                 monthlyInstallmentLbl: "القسط الشهري",
                 netLoanLbl: "صافي القرض:",
                 totalInterestLbl: "إجمالي الفوائد:",
+                tcItemNameLbl: "اسم المنتج (اختياري للمشاركة الفيروسية)",
+                tcPriceLbl: "سعر المنتج",
+                tcCurrLbl: "العملة",
+                tcIncomeLbl: "دخلك الشهري الصافي",
+                tcHoursLbl: "ساعات العمل يومياً",
+                tcDaysLbl: "أيام العمل شهرياً",
+                tcResultTitle: "التكلفة الحقيقية لهذا الشراء من عُمرك:",
+                tcHourlyRateLbl: "قيمة ساعة عملك الفعلية:",
+                tcTotalHoursLbl: "إجمالي الساعات المطلوبة:",
+                tcSalaryPctLbl: "نسبة الاستهلاك من راتبك الشهري:",
+                tcShareBtn: "مشاركة النتيجة الصادمة مع أصدقائك 🔥📤",
                 arcadeTitle: "صالة الألعاب التفاعلية المفتوحة للجميع",
                 arcadeSub: "4 ألعاب حقيقية تعمل باللمس مباشرة في المتصفح بدون تحميل — حطّم الأرقام القياسية!",
                 game1Name: "🦖 عدّاء السايبر",
@@ -1111,6 +1193,7 @@
                 investSub: "Project your compound portfolio growth or calculate exact monthly installments",
                 modeCompound: "Compound ROI",
                 modeLoan: "Loan Installments",
+                modeTimeCost: "⏳ Time-Cost Calc",
                 initCapLbl: "Initial Capital ($)",
                 monthlyAddLbl: "Monthly Contribution ($)",
                 annualRetLbl: "Annual Return (%)",
@@ -1126,6 +1209,17 @@
                 monthlyInstallmentLbl: "Monthly Installment",
                 netLoanLbl: "Net Principal:",
                 totalInterestLbl: "Total Interest:",
+                tcItemNameLbl: "Product Name (Optional for Viral Share)",
+                tcPriceLbl: "Product Price",
+                tcCurrLbl: "Currency",
+                tcIncomeLbl: "Net Monthly Income",
+                tcHoursLbl: "Work Hours / Day",
+                tcDaysLbl: "Work Days / Month",
+                tcResultTitle: "True Life-Time Cost of This Purchase:",
+                tcHourlyRateLbl: "Your Real Hourly Wage:",
+                tcTotalHoursLbl: "Total Work Hours Needed:",
+                tcSalaryPctLbl: "Monthly Income Consumed:",
+                tcShareBtn: "Share Shocking Result With Friends 🔥📤",
                 arcadeTitle: "Open Interactive Browser Arcade Hub",
                 arcadeSub: "4 touch-ready HTML5 games playable instantly with zero downloads — beat the high scores!",
                 game1Name: "🦖 Cyber Runner",
@@ -1254,7 +1348,6 @@
                 .then(data => {
                     if (data && data.rates) {
                         if (data.rates.EUR) liveRatesUSD.EUR = data.rates.EUR;
-                        if (data.rates.IQD) liveRatesUSD.IQD = data.rates.IQD;
                         if (data.rates.SAR) liveRatesUSD.SAR = data.rates.SAR;
                         if (data.rates.AED) liveRatesUSD.AED = data.rates.AED;
                         if (data.rates.EGP) liveRatesUSD.EGP = data.rates.EGP;
@@ -1562,25 +1655,35 @@
             `).join('');
         }
 
-        // ==================== 3. COMPOUND ROI & LOAN CALCULATOR ====================
+        // ==================== 3. COMPOUND ROI, LOAN & TIME-COST CALCULATOR ====================
         function switchFinanceSubMode(mode) {
             const cBox = document.getElementById('finSubCompound');
             const lBox = document.getElementById('finSubLoan');
+            const tBox = document.getElementById('finSubTimeCost');
             const cBtn = document.getElementById('subBtnCompound');
             const lBtn = document.getElementById('subBtnLoan');
+            const tBtn = document.getElementById('subBtnTimeCost');
+
+            if (!cBox || !lBox || !tBox) return;
+            [cBox, lBox, tBox].forEach(el => el.classList.add('hidden'));
+
+            const inactiveCls = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
+            cBtn.className = inactiveCls;
+            lBtn.className = inactiveCls;
+            tBtn.className = inactiveCls;
 
             if (mode === 'compound') {
                 cBox.classList.remove('hidden');
-                lBox.classList.add('hidden');
                 cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
-                lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
                 calculateROI();
-            } else {
+            } else if (mode === 'loan') {
                 lBox.classList.remove('hidden');
-                cBox.classList.add('hidden');
                 lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
-                cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
                 calculateLoan();
+            } else if (mode === 'timecost') {
+                tBox.classList.remove('hidden');
+                tBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-obsidian-950 transition";
+                calculateTimeCost();
             }
         }
 
@@ -1694,6 +1797,53 @@
                 document.getElementById('outTotalInt').textContent = `$${((mPay * mos) - principal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             } catch (err) {
                 console.warn('Loan calc error:', err);
+            }
+        }
+
+        let viralTimeCostMsg = "";
+
+        function calculateTimeCost() {
+            try {
+                const item = document.getElementById('tcItemName').value.trim() || (lang === 'ar' ? 'هذا المنتج' : 'this item');
+                const price = Math.max(0, parseFloat(document.getElementById('tcItemPrice').value) || 0);
+                const curr = document.getElementById('tcCurrency').value;
+                const income = Math.max(1, parseFloat(document.getElementById('tcMonthlyIncome').value) || 1);
+                const hDay = Math.max(1, parseFloat(document.getElementById('tcHoursDay').value) || 8);
+                const dMonth = Math.max(1, parseFloat(document.getElementById('tcDaysMonth').value) || 26);
+
+                const totalMonthHours = hDay * dMonth;
+                const hourlyWage = income / totalMonthHours;
+                const totalHoursNeeded = price / hourlyWage;
+                const workDays = Math.floor(totalHoursNeeded / hDay);
+                const remHours = (totalHoursNeeded % hDay).toFixed(1);
+                const pct = ((price / income) * 100).toFixed(1);
+
+                const mainStr = lang === 'ar'
+                    ? (workDays > 0 ? `${workDays} يوم عمل و ${remHours} ساعة` : `${remHours} ساعة عمل متواصلة`)
+                    : (workDays > 0 ? `${workDays} Work Days & ${remHours} Hrs` : `${remHours} Work Hours`);
+
+                document.getElementById('tcMainResult').textContent = mainStr;
+                document.getElementById('tcHourlyWageOut').textContent = `${hourlyWage.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${curr} / hr`;
+                document.getElementById('tcTotalHoursOut').textContent = `${totalHoursNeeded.toFixed(1)} hrs`;
+                document.getElementById('tcIncomePctOut').textContent = `${pct}%`;
+
+                viralTimeCostMsg = lang === 'ar'
+                    ? `صدمة! اكتشفت أن شراء (${item}) بسعر ${price.toLocaleString()} ${curr} يكلفني [${mainStr}] من حياتي في العمل (${pct}% من راتبي)! ⏳💸\nاحسب كم يكلفك أي منتج عبر SmartVal Ultra:\nhttps://mohamed-iq.github.io/`
+                    : `Whoa! Buying (${item}) for ${price.toLocaleString()} ${curr} costs me [${mainStr}] of my life working (${pct}% of my salary)! ⏳💸\nCalculate yours on SmartVal Ultra:\nhttps://mohamed-iq.github.io/`;
+            } catch (err) {
+                console.warn('Time cost calc error:', err);
+            }
+        }
+
+        function shareTimeCostViral() {
+            calculateTimeCost();
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SmartVal Ultra - Time Cost Calculator',
+                    text: viralTimeCostMsg
+                }).catch(() => {});
+            } else {
+                copyText(viralTimeCostMsg, lang === 'ar' ? 'تم نسخ النتيجة لمشاركتها مع أصدقائك!' : 'Result copied to share!');
             }
         }
 
@@ -2337,6 +2487,7 @@
             loadDevicePreset(activePresetKey);
             calculateROI();
             calculateLoan();
+            calculateTimeCost();
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -2411,6 +2562,7 @@
             try { applyOwnerMonetization(); } catch (e) {}
             try { calculateROI(); } catch (e) {}
             try { calculateLoan(); } catch (e) {}
+            try { calculateTimeCost(); } catch (e) {}
             try { bindArcadeEvents(); } catch (e) {}
             try { initRunnerCanvas(); } catch (e) {}
         }
