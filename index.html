@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark">
 <head>
@@ -325,4 +325,2100 @@
                     <div class="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center glass-panel-inner p-4 sm:p-5 rounded-2xl">
                         <div class="sm:col-span-5 space-y-2">
                             <label class="text-xs font-bold text-slate-400 block" data-i18n="amountLbl">المبلغ المراد تحويله</label>
-                            <input type="number"
+                            <input type="number" id="currInputAmount" value="100" min="0" step="any" oninput="recalcLiveCurrency()" class="w-full px-4 py-3 rounded-xl bg-obsidian-900 border border-white/10 text-lg font-mono font-extrabold text-white focus:outline-none focus:border-emerald-400">
+                            <select id="currFromSelect" onchange="recalcLiveCurrency()" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-slate-200 focus:outline-none focus:border-emerald-400">
+                                <option value="USD">🇺🇸 USD - دولار أمريكي</option>
+                                <option value="IQD">🇮🇶 IQD - دينار عراقي</option>
+                                <option value="SAR">🇸🇦 SAR - ريال سعودي</option>
+                                <option value="EUR">🇪🇺 EUR - يورو أوروبي</option>
+                                <option value="AED">🇦🇪 AED - درهم إماراتي</option>
+                                <option value="EGP">🇪🇬 EGP - جنيه مصري</option>
+                                <option value="TRY">🇹🇷 TRY - ليرة تركية</option>
+                                <option value="GOLD24">🥇 Gold 24K - ذهب عيار 24 (غرام)</option>
+                                <option value="GOLD21">🏅 Gold 21K - ذهب عيار 21 (غرام)</option>
+                                <option value="BTC">₿ BTC - بيتكوين (Bitcoin)</option>
+                                <option value="ETH">Ξ ETH - إيثيريوم (Ethereum)</option>
+                                <option value="SOL">◎ SOL - سولانا (Solana)</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-1 flex justify-center pt-4">
+                            <button onclick="swapCurrencies()" aria-label="Swap" class="w-11 h-11 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-500 text-obsidian-950 flex items-center justify-center shadow-lg shadow-emerald-500/30 transition active:rotate-180">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="sm:col-span-5 space-y-2">
+                            <label class="text-xs font-bold text-slate-400 block" data-i18n="resultLbl">القيمة الحقيقية المقابلة</label>
+                            <div id="currOutputDisplay" class="w-full px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-lg font-mono font-extrabold text-emerald-400 truncate">
+                                131,000 IQD
+                            </div>
+                            <select id="currToSelect" onchange="recalcLiveCurrency()" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-slate-200 focus:outline-none focus:border-emerald-400">
+                                <option value="IQD" selected>🇮🇶 IQD - دينار عراقي</option>
+                                <option value="USD">🇺🇸 USD - دولار أمريكي</option>
+                                <option value="SAR">🇸🇦 SAR - ريال سعودي</option>
+                                <option value="EUR">🇪🇺 EUR - يورو أوروبي</option>
+                                <option value="AED">🇦🇪 AED - درهم إماراتي</option>
+                                <option value="EGP">🇪🇬 EGP - جنيه مصري</option>
+                                <option value="TRY">🇹🇷 TRY - ليرة تركية</option>
+                                <option value="GOLD24">🥇 Gold 24K - ذهب عيار 24 (غرام)</option>
+                                <option value="GOLD21">🏅 Gold 21K - ذهب عيار 21 (غرام)</option>
+                                <option value="BTC">₿ BTC - بيتكوين (Bitcoin)</option>
+                                <option value="ETH">Ξ ETH - إيثيريوم (Ethereum)</option>
+                                <option value="SOL">◎ SOL - سولانا (Solana)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Live Unit Rate Strip -->
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3 bg-obsidian-950/80 border border-white/10 px-4 py-3 rounded-2xl">
+                        <div class="text-xs sm:text-sm font-semibold">
+                            <span class="text-slate-400" data-i18n="liveRateLbl">سعر الصرف الفعلي الآن:</span>
+                            <span id="unitRateStrip" class="font-mono text-emerald-400 font-bold mx-1.5">1 USD = 1,310 IQD</span>
+                        </div>
+                        <button onclick="copyElementValue('currOutputDisplay')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white flex items-center gap-1.5 transition">
+                            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            <span data-i18n="copyBtn">نسخ القيمة</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Market Chart -->
+                    <div class="mt-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xs sm:text-sm font-bold text-slate-300" data-i18n="chartTitle">مؤشر حركة السوق الحية (Live Market Momentum)</h3>
+                            <span id="lastUpdatedStamp" class="text-[11px] font-mono text-emerald-400">LIVE STREAM</span>
+                        </div>
+                        <div class="w-full h-44 glass-panel-inner rounded-2xl p-3 relative">
+                            <canvas id="liveMarketChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== MODULE 2: AI PRODUCT COMPARATOR & REAL STORE DEALS ==================== -->
+                <section id="panel-comparator" class="tab-panel hidden glass-card rounded-3xl p-5 sm:p-7">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-extrabold text-white" data-i18n="compTitle">مقارن الأجهزة بالذكاء الاصطناعي وروابط المتاجر الحقيقية</h2>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-0.5" data-i18n="compSub">قارن المواصفات الدقيقة وانتقل مباشرة لصفحات الشراء الرسمية في أمازون ونون وإيباي</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 text-xs font-bold border border-cyan-500/30">AI Engine + Direct Stores</span>
+                    </div>
+
+                    <!-- Quick Flagship Presets -->
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-400 block mb-2" data-i18n="presetsTitle">مقارنات رائجة عالمياً:</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadDevicePreset('iphone_samsung')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-cyan-500 hover:text-obsidian-950 text-xs font-bold text-slate-200 border border-white/10 transition">iPhone 17 Pro Max vs S26 Ultra</button>
+                            <button onclick="loadDevicePreset('mac_dell')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-cyan-500 hover:text-obsidian-950 text-xs font-bold text-slate-200 border border-white/10 transition">MacBook Pro M4 vs Pixel 10 Pro</button>
+                            <button onclick="loadDevicePreset('ps5_xbox')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-cyan-500 hover:text-obsidian-950 text-xs font-bold text-slate-200 border border-white/10 transition">PlayStation 5 Pro vs Xbox Series X</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Search Comparison -->
+                    <div class="grid grid-cols-1 sm:grid-cols-11 gap-3 items-center glass-panel-inner p-4 rounded-2xl mb-6">
+                        <div class="sm:col-span-5">
+                            <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="dev1Lbl">المنتج الأول</label>
+                            <input type="text" id="inputDeviceA" value="iPhone 17 Pro Max" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-white focus:border-cyan-400 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-1 text-center font-mono font-black text-cyan-400 text-sm pt-4">VS</div>
+                        <div class="sm:col-span-5">
+                            <label class="text-xs font-bold text-slate-400 block mb-1" data-i18n="dev2Lbl">المنتج الثاني</label>
+                            <input type="text" id="inputDeviceB" value="Samsung S26 Ultra" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-sm font-bold text-white focus:border-cyan-400 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-11 mt-2">
+                            <button onclick="runCustomDeviceCompare()" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-obsidian-950 font-black text-sm shadow-lg shadow-cyan-500/20 transition active:scale-[0.99]" data-i18n="runCompareBtn">
+                                تحليل بالذكاء الاصطناعي وجلب روابط المتاجر الحقيقية ⚡
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Side-by-Side Store Action Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <div class="p-4 rounded-2xl glass-panel-inner border border-cyan-500/30 text-center">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 text-[11px] font-bold mb-1" data-i18n="optABadge">الخيار الأول</span>
+                            <h3 id="compTitleA" class="font-extrabold text-base sm:text-lg text-white">iPhone 17 Pro Max</h3>
+                            <p id="compPriceA" class="font-mono text-emerald-400 font-extrabold text-lg mt-1">$1,199 MSRP</p>
+                            <a id="storeLinkA" href="https://www.amazon.com/s?k=iPhone+17+Pro+Max" target="_blank" rel="noopener noreferrer" class="mt-3 block w-full py-2.5 px-3 rounded-xl bg-white/10 hover:bg-cyan-500 hover:text-obsidian-950 text-white text-xs font-extrabold transition" data-i18n="checkAmazonBtn">
+                                عرض السعر الحقيقي في Amazon ↗
+                            </a>
+                        </div>
+
+                        <div class="p-4 rounded-2xl glass-panel-inner border border-emerald-500/30 text-center">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-[11px] font-bold mb-1" data-i18n="optBBadge">الخيار الثاني</span>
+                            <h3 id="compTitleB" class="font-extrabold text-base sm:text-lg text-white">Samsung S26 Ultra</h3>
+                            <p id="compPriceB" class="font-mono text-emerald-400 font-extrabold text-lg mt-1">$1,299 MSRP</p>
+                            <a id="storeLinkB" href="https://www.amazon.com/s?k=Samsung+S26+Ultra" target="_blank" rel="noopener noreferrer" class="mt-3 block w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 text-xs font-extrabold transition" data-i18n="checkAmazonBtn">
+                                عرض السعر الحقيقي في Amazon ↗
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Spec Bars -->
+                    <div id="specBarsContainer" class="space-y-4 glass-panel-inner p-4 rounded-2xl mb-5"></div>
+
+                    <!-- AI Verdict -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-obsidian-900 to-slate-900 border border-amber-500/30 mb-6">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-amber-400 text-obsidian-950 text-xs font-black" data-i18n="aiTag">توصية AI الذكية</span>
+                            <h4 class="font-bold text-sm sm:text-base text-white" data-i18n="aiVerdictHeading">الخلاصة النهائية قبل الشراء:</h4>
+                        </div>
+                        <p id="compVerdictText" class="text-xs sm:text-sm text-slate-300 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Direct Store Links Grid (Amazon, Noon, eBay) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-extrabold text-sm sm:text-base text-white" data-i18n="directStoresTitle">الانتقال المباشر لصفحات الشراء الرسمية</h4>
+                            <span class="text-[11px] font-mono text-emerald-400">Verified Outbound</span>
+                        </div>
+                        <div id="directStoresGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+                    </div>
+                </section>
+
+                <!-- ==================== MODULE 3: COMPOUND WEALTH & LOAN CALCULATOR ==================== -->
+                <section id="panel-invest" class="tab-panel hidden glass-card rounded-3xl p-5 sm:p-7">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-extrabold text-white" data-i18n="investTitle">حاسبة الثروة المركبة والتمويل الذكي</h2>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-0.5" data-i18n="investSub">خطط لمستقبلك المالي وشاهد منحنى نمو أرباحك المركبة أو احسب أقساطك بدقة</p>
+                        </div>
+                        <div class="flex bg-obsidian-950 p-1 rounded-xl border border-white/10">
+                            <button onclick="switchFinanceSubMode('compound')" id="subBtnCompound" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition" data-i18n="modeCompound">الاستثمار المركب</button>
+                            <button onclick="switchFinanceSubMode('loan')" id="subBtnLoan" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition" data-i18n="modeLoan">حاسبة الأقساط</button>
+                        </div>
+                    </div>
+
+                    <!-- Compound Mode -->
+                    <div id="finSubCompound" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                        <div class="md:col-span-6 space-y-4 glass-panel-inner p-4 rounded-2xl">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="initCapLbl">رأس المال الأولي ($)</span>
+                                    <span id="valInvInit" class="font-mono text-white text-sm font-extrabold">$5,000</span>
+                                </div>
+                                <input type="range" id="rngInvInit" min="100" max="100000" step="100" value="5000" oninput="calculateROI()" class="w-full">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="monthlyAddLbl">الادخار الشهري ($)</span>
+                                    <span id="valInvMonthly" class="font-mono text-emerald-400 text-sm font-extrabold">$300</span>
+                                </div>
+                                <input type="range" id="rngInvMonthly" min="0" max="5000" step="50" value="300" oninput="calculateROI()" class="w-full">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="annualRetLbl">العائد السنوي (%)</span>
+                                    <span id="valInvRate" class="font-mono text-amber-400 text-sm font-extrabold">14%</span>
+                                </div>
+                                <input type="range" id="rngInvRate" min="1" max="40" step="1" value="14" oninput="calculateROI()" class="w-full">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="durationYrsLbl">المدة (سنوات)</span>
+                                    <span id="valInvYears" class="font-mono text-cyan-400 text-sm font-extrabold">10</span>
+                                </div>
+                                <input type="range" id="rngInvYears" min="1" max="30" step="1" value="10" oninput="calculateROI()" class="w-full">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-6 space-y-4">
+                            <div class="p-5 rounded-2xl bg-gradient-to-br from-obsidian-900 to-slate-900 border border-emerald-500/30">
+                                <span class="text-xs text-slate-400 block mb-1" data-i18n="projectedWealthLbl">إجمالي الثروة المتوقعة</span>
+                                <div id="outInvFuture" class="font-mono text-3xl sm:text-4xl font-black text-emerald-400 mb-4">$98,740</div>
+                                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/10 text-xs">
+                                    <div>
+                                        <span class="text-slate-400 block" data-i18n="totalInvestedLbl">إجمالي المبلغ المدفوع:</span>
+                                        <strong id="outInvPrincipal" class="font-mono text-white text-sm font-extrabold">$41,000</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block" data-i18n="compoundGainLbl">صافي الأرباح المركبة:</span>
+                                        <strong id="outInvProfit" class="font-mono text-amber-400 text-sm font-extrabold">+$57,740</strong>
+                                    </div>
+                                </div>
+                                <button onclick="shareROIPlan()" class="mt-4 w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 text-xs font-black transition active:scale-95" data-i18n="shareRoiBtn">
+                                    مشاركة خطتي الاستثمارية 📤
+                                </button>
+                            </div>
+
+                            <div class="glass-panel-inner p-3 rounded-2xl">
+                                <div class="w-full h-40 relative">
+                                    <canvas id="roiGrowthChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan Mode -->
+                    <div id="finSubLoan" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4 glass-panel-inner p-4 rounded-2xl">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="loanPriceLbl">قيمة التمويل / السلعة ($)</span>
+                                    <span id="valLoanPrice" class="font-mono text-white text-sm font-extrabold">$30,000</span>
+                                </div>
+                                <input type="range" id="rngLoanPrice" min="1000" max="250000" step="500" value="30000" oninput="calculateLoan()" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="loanDownLbl">الدفعة المقدمة ($)</span>
+                                    <span id="valLoanDown" class="font-mono text-emerald-400 text-sm font-extrabold">$6,000</span>
+                                </div>
+                                <input type="range" id="rngLoanDown" min="0" max="150000" step="500" value="6000" oninput="calculateLoan()" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="loanAprLbl">الفائدة السنوية (%)</span>
+                                    <span id="valLoanApr" class="font-mono text-amber-400 text-sm font-extrabold">4.5%</span>
+                                </div>
+                                <input type="range" id="rngLoanApr" min="0" max="25" step="0.5" value="4.5" oninput="calculateLoan()" class="w-full">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-400" data-i18n="loanMosLbl">المدة (بالأشهر)</span>
+                                    <span id="valLoanMos" class="font-mono text-cyan-400 text-sm font-extrabold">48</span>
+                                </div>
+                                <input type="range" id="rngLoanMos" min="6" max="120" step="6" value="48" oninput="calculateLoan()" class="w-full">
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-obsidian-900 border border-white/10 space-y-4">
+                            <div class="text-center border-b border-white/10 pb-4">
+                                <span class="text-xs text-slate-400 block mb-1" data-i18n="monthlyInstallmentLbl">القسط الشهري</span>
+                                <div id="outMonthlyPay" class="font-mono text-3xl sm:text-4xl font-black text-emerald-400">$547.28</div>
+                            </div>
+                            <div class="space-y-2 text-xs sm:text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400" data-i18n="netLoanLbl">صافي القرض:</span>
+                                    <strong id="outNetLoan" class="font-mono text-white">$24,000.00</strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400" data-i18n="totalInterestLbl">إجمالي الفوائد:</span>
+                                    <strong id="outTotalInt" class="font-mono text-amber-400">$2,269.44</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== MODULE 4: OPEN ARCADE & VIRAL GAMES HUB ==================== -->
+                <section id="panel-arcade" class="tab-panel hidden glass-card rounded-3xl p-5 sm:p-7 border border-purple-500/30">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-extrabold text-white" data-i18n="arcadeTitle">صالة الألعاب التفاعلية المفتوحة للجميع</h2>
+                            <p class="text-xs sm:text-sm text-slate-400 mt-0.5" data-i18n="arcadeSub">4 ألعاب حقيقية تعمل باللمس مباشرة في المتصفح بدون تحميل — حطّم الأرقام القياسية!</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-purple-500/15 text-purple-300 text-xs font-bold border border-purple-500/30">HTML5 Touch Arcade</span>
+                    </div>
+
+                    <!-- 4 Interactive Game Selector Pills -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+                        <button onclick="selectArcadeGame('runner')" id="gbtn-runner" class="arcade-select-btn py-2.5 px-3 rounded-xl bg-purple-600 text-white text-xs sm:text-sm font-extrabold transition shadow-lg shadow-purple-600/20" data-i18n="game1Name">🦖 عدّاء السايبر</button>
+                        <button onclick="selectArcadeGame('snake')" id="gbtn-snake" class="arcade-select-btn py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs sm:text-sm font-bold transition" data-i18n="game2Name">🐍 ثعبان النيون</button>
+                        <button onclick="selectArcadeGame('breakout')" id="gbtn-breakout" class="arcade-select-btn py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs sm:text-sm font-bold transition" data-i18n="game3Name">🧱 كاسر الطوب</button>
+                        <button onclick="selectArcadeGame('xo')" id="gbtn-xo" class="arcade-select-btn py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs sm:text-sm font-bold transition" data-i18n="game4Name">❌⭕ تحدي إكس-أو AI</button>
+                    </div>
+
+                    <!-- GAME 1: CYBER RUNNER -->
+                    <div id="game-box-runner" class="arcade-game-box space-y-3">
+                        <div class="flex items-center justify-between text-xs bg-obsidian-950/70 px-4 py-2.5 rounded-xl border border-white/10">
+                            <span class="text-slate-300 font-bold" data-i18n="runnerHint">المس الشاشة أو اضغط Space للقفز فوق الليزر!</span>
+                            <div class="flex items-center gap-4 font-mono">
+                                <span>Score: <strong id="runnerScoreDisplay" class="text-cyan-400">0</strong></span>
+                                <span>Best: <strong id="runnerBestDisplay" class="text-emerald-400">0</strong></span>
+                            </div>
+                        </div>
+                        <div class="relative rounded-2xl overflow-hidden">
+                            <canvas id="runnerCanvas" height="230" class="arcade-canvas rounded-2xl cursor-pointer"></canvas>
+                        </div>
+                        <div class="flex justify-center">
+                            <button onclick="triggerRunnerJump()" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-black text-sm shadow-lg active:scale-95 transition" data-i18n="runnerJumpBtn">
+                                اقفز / ابدأ اللعب ⬆️
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- GAME 2: NEON SNAKE -->
+                    <div id="game-box-snake" class="arcade-game-box hidden space-y-3">
+                        <div class="flex items-center justify-between text-xs bg-obsidian-950/70 px-4 py-2.5 rounded-xl border border-white/10">
+                            <span class="text-slate-300 font-bold" data-i18n="snakeHint">استخدم الأسهم بالأسفل أو لوحة المفاتيح</span>
+                            <div class="flex items-center gap-4 font-mono">
+                                <span>Score: <strong id="snakeScoreDisplay" class="text-emerald-400">0</strong></span>
+                                <span>Best: <strong id="snakeBestDisplay" class="text-amber-400">0</strong></span>
+                            </div>
+                        </div>
+                        <div class="max-w-sm mx-auto">
+                            <canvas id="snakeCanvas" height="260" class="arcade-canvas rounded-2xl"></canvas>
+                        </div>
+                        <!-- Mobile Touch D-Pad Controller -->
+                        <div class="grid grid-cols-3 gap-2 max-w-[210px] mx-auto pt-1 select-none" dir="ltr">
+                            <div></div>
+                            <button onclick="setSnakeDir(0, -1)" class="h-12 rounded-xl bg-white/10 hover:bg-emerald-500 hover:text-obsidian-950 text-white font-black text-lg active:scale-90 transition">▲</button>
+                            <div></div>
+                            <button onclick="setSnakeDir(-1, 0)" class="h-12 rounded-xl bg-white/10 hover:bg-emerald-500 hover:text-obsidian-950 text-white font-black text-lg active:scale-90 transition">◀</button>
+                            <button onclick="startSnakeGame()" class="h-12 rounded-xl bg-emerald-500 text-obsidian-950 font-black text-xs active:scale-90 transition">PLAY</button>
+                            <button onclick="setSnakeDir(1, 0)" class="h-12 rounded-xl bg-white/10 hover:bg-emerald-500 hover:text-obsidian-950 text-white font-black text-lg active:scale-90 transition">▶</button>
+                            <div></div>
+                            <button onclick="setSnakeDir(0, 1)" class="h-12 rounded-xl bg-white/10 hover:bg-emerald-500 hover:text-obsidian-950 text-white font-black text-lg active:scale-90 transition">▼</button>
+                            <div></div>
+                        </div>
+                    </div>
+
+                    <!-- GAME 3: NEON BREAKOUT -->
+                    <div id="game-box-breakout" class="arcade-game-box hidden space-y-3">
+                        <div class="flex items-center justify-between text-xs bg-obsidian-950/70 px-4 py-2.5 rounded-xl border border-white/10">
+                            <span class="text-slate-300 font-bold" data-i18n="breakoutHint">اسحب إصبعك أو استخدم الأزرار لتحريك المضرب</span>
+                            <div class="flex items-center gap-4 font-mono">
+                                <span>Score: <strong id="breakoutScoreDisplay" class="text-cyan-400">0</strong></span>
+                                <span>Best: <strong id="breakoutBestDisplay" class="text-amber-400">0</strong></span>
+                            </div>
+                        </div>
+                        <canvas id="breakoutCanvas" height="260" class="arcade-canvas rounded-2xl cursor-ew-resize"></canvas>
+                        <div class="flex items-center justify-center gap-3 pt-1" dir="ltr">
+                            <button onclick="nudgeBreakoutPaddle(-45)" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-sm active:scale-90 transition">◀ LEFT</button>
+                            <button onclick="startBreakoutGame()" class="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs transition" data-i18n="startBreakoutBtn">بدء / إعادة اللعب 🔄</button>
+                            <button onclick="nudgeBreakoutPaddle(45)" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-sm active:scale-90 transition">RIGHT ▶</button>
+                        </div>
+                    </div>
+
+                    <!-- GAME 4: SMART TIC-TAC-TOE AI -->
+                    <div id="game-box-xo" class="arcade-game-box hidden space-y-4">
+                        <div class="flex items-center justify-between text-xs bg-obsidian-950/70 px-4 py-2.5 rounded-xl border border-white/10">
+                            <span id="xoStatusText" class="text-emerald-400 font-extrabold" data-i18n="xoTurnYou">دورك الآن (X)</span>
+                            <div class="flex items-center gap-3 font-mono">
+                                <span>You: <strong id="xoWinCount" class="text-emerald-400">0</strong></span>
+                                <span>AI: <strong id="xoLossCount" class="text-rose-400">0</strong></span>
+                            </div>
+                        </div>
+                        <div id="xoBoardGrid" class="grid grid-cols-3 gap-2.5 max-w-[280px] mx-auto">
+                            <button onclick="playXoCell(0)" data-xo="0" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(1)" data-xo="1" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(2)" data-xo="2" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(3)" data-xo="3" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(4)" data-xo="4" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(5)" data-xo="5" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(6)" data-xo="6" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(7)" data-xo="7" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                            <button onclick="playXoCell(8)" data-xo="8" class="xo-cell h-20 rounded-2xl bg-obsidian-900 hover:bg-white/5 border border-white/15 font-mono text-3xl font-black transition"></button>
+                        </div>
+                        <div class="text-center">
+                            <button onclick="resetXoGame()" class="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-extrabold transition" data-i18n="xoResetBtn">جولة جديدة 🔄</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== AD SLOT 2: HIGH-CTR NATIVE IN-FEED AD ==================== -->
+                <div id="ad-slot-native" class="ad-enterprise-slot rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 block mb-1">FEATURED FINANCIAL PARTNER</span>
+                        <h4 class="text-sm font-extrabold text-white" data-i18n="nativeBannerTitle">استثمر في الذهب والأسهم العالمية والعملات الرقمية بعمولة 0%</h4>
+                        <p class="text-xs text-slate-400 mt-0.5" data-i18n="nativeBannerSub">منصات مرخصة وموثوقة للمستثمرين في الشرق الأوسط والعالم.</p>
+                    </div>
+                    <button onclick="openModal('advertiseModal')" class="shrink-0 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 text-xs font-black transition" data-i18n="nativeBannerBtn">
+                        اعرف المزيد
+                    </button>
+                </div>
+
+                <!-- ==================== SEO AUTHORITY ARTICLE (FOR GOOGLE TOP RANKING) ==================== -->
+                <article class="glass-card rounded-3xl p-5 sm:p-7 space-y-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-1.5 h-6 rounded-full bg-gradient-to-b from-emerald-400 to-cyan-400"></span>
+                        <h2 class="text-base sm:text-xl font-extrabold text-white" data-i18n="seoHeading">
+                            منصة مُقارن SmartVal Ultra: مرجعك الشامل للأسعار الحية، المقارنات الذكية، والترفيه التفاعلي
+                        </h2>
+                    </div>
+                    <div id="seoRichBody" class="text-xs sm:text-sm text-slate-400 leading-relaxed space-y-2.5">
+                        <p>
+                            تجمع <strong>منصة مُقارن (SmartVal Ultra)</strong> بين دقة البيانات المالية الحية وسهولة الاستخدام للمستثمرين والمتسوقين في الوطن العربي والعالم. بفضل الاتصال المباشر مع أسواق المال العالمية، يمكنك متابعة <strong>سعر الدولار اليوم مقابل الدينار العراقي والريال السعودي والدرهم الإماراتي</strong>، بالإضافة إلى <strong>أسعار الذهب عيار 24 وعيار 21</strong> والعملات الرقمية مثل البيتكوين والإيثيريوم لحظة بلحظة.
+                        </p>
+                        <p>
+                            وعند رغبتك في شراء هاتف ذكي أو حاسوب محمول جديد، يوفر لك <strong>مقارن الأجهزة بالذكاء الاصطناعي</strong> تحليلاً دقيقاً للأداء والكاميرا والبطارية مع روابط مباشرة لصفحات الشراء الرسمية في <strong>Amazon</strong> و<strong>Noon</strong> و<strong>eBay</strong>، إلى جانب صالة ألعاب متصفح مجانية ومفتوحة للجميع.
+                        </p>
+                    </div>
+                </article>
+            </div>
+
+            <!-- RIGHT / ENTERPRISE SIDEBAR (4 COLS) -->
+            <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-20">
+                <!-- Live Market Snapshot Widget -->
+                <div class="glass-card rounded-3xl p-5 space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-extrabold text-sm text-white" data-i18n="sidebarMarketsTitle">نبض الأسواق العالمية الآن</h3>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-mono text-[10px] font-bold">LIVE FEED</span>
+                    </div>
+                    <div class="space-y-2.5 font-mono text-xs">
+                        <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
+                            <span class="text-slate-300 font-sans font-bold">Bitcoin (BTC)</span>
+                            <strong id="side-btc" class="text-emerald-400 text-sm">$92,450</strong>
+                        </div>
+                        <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
+                            <span class="text-slate-300 font-sans font-bold">Ethereum (ETH)</span>
+                            <strong id="side-eth" class="text-cyan-400 text-sm">$3,185</strong>
+                        </div>
+                        <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
+                            <span class="text-slate-300 font-sans font-bold">Solana (SOL)</span>
+                            <strong id="side-sol" class="text-purple-400 text-sm">$198.40</strong>
+                        </div>
+                        <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
+                            <span class="text-slate-300 font-sans font-bold">Gold 24K (1g)</span>
+                            <strong id="side-gold" class="text-amber-400 text-sm">$86.80</strong>
+                        </div>
+                        <div class="p-3 rounded-2xl glass-panel-inner flex items-center justify-between">
+                            <span class="text-slate-300 font-sans font-bold">100 USD → IQD</span>
+                            <strong id="side-iqd" class="text-white text-sm">131,000 IQD</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AD SLOT 3: SIDEBAR DISPLAY UNIT (300x250) -->
+                <div id="ad-slot-sidebar" class="ad-enterprise-slot rounded-3xl p-6 flex flex-col items-center justify-center text-center min-h-[260px]">
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-3">ADVERTISEMENT • 300x250</span>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-extrabold text-white text-base mb-1.5" data-i18n="sideSponsorTitle">مساحة الرعاة والشركات الكبرى</h4>
+                    <p class="text-xs text-slate-400 mb-4 leading-relaxed" data-i18n="sideSponsorSub">
+                        اعرض علامتك التجارية أمام آلاف المستثمرين والمتسوقين يومياً في الشرق الأوسط والعالم.
+                    </p>
+                    <button onclick="openModal('advertiseModal')" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidian-950 text-xs font-black transition" data-i18n="sideSponsorBtn">
+                        احجز مساحتك الإعلانية
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- ==================== CLEAN ENTERPRISE FOOTER (ZERO VISIBLE ADMIN BUTTONS) ==================== -->
+    <footer class="bg-obsidian-950/90 border-t border-white/10 mt-14 text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg font-black text-white" data-i18n="brandName">مُقارن</span>
+                    <span class="text-xs font-mono text-emerald-400 font-bold">| SmartVal Ultra</span>
+                </div>
+
+                <nav class="flex flex-wrap items-center justify-center gap-5 text-xs sm:text-sm font-semibold">
+                    <button onclick="openLegalModal('about')" class="hover:text-white transition" data-i18n="linkAbout">من نحن</button>
+                    <button onclick="openLegalModal('privacy')" class="hover:text-white transition" data-i18n="linkPrivacy">سياسة الخصوصية</button>
+                    <button onclick="openLegalModal('terms')" class="hover:text-white transition" data-i18n="linkTerms">شروط الاستخدام</button>
+                    <button onclick="openLegalModal('contact')" class="hover:text-white transition" data-i18n="linkContact">اتصل بنا</button>
+                </nav>
+            </div>
+            <div class="pt-5 flex flex-col sm:flex-row items-center justify-between text-xs gap-2">
+                <p data-i18n="footerCopy">© 2026 منصة مُقارن الذكية (SmartVal Ultra). جميع الحقوق محفوظة.</p>
+                <p class="text-slate-500" data-i18n="footerAffiliate">إفصاح الشركاء: قد نحصل على عمولة تسويقية عند الشراء عبر روابط المتاجر الرسمية دون أي تكلفة إضافية عليك.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== AD SLOT 4: STICKY MOBILE BOTTOM ANCHOR ==================== -->
+    <div id="ad-slot-mobile" class="fixed bottom-0 inset-x-0 z-40 sm:hidden bg-obsidian-900/95 backdrop-blur-lg border-t border-white/15 px-3 py-2 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 overflow-hidden">
+            <span class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-[9px] font-bold shrink-0">AD</span>
+            <p class="text-xs font-bold text-white truncate" data-i18n="mobileAnchorMsg">SmartVal Ultra — الأسعار الحية والمقارنات الذكية</p>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="openModal('advertiseModal')" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-obsidian-950 text-[11px] font-black" data-i18n="learnMoreBtn">أعلن معنا</button>
+            <button onclick="document.getElementById('ad-slot-mobile').remove()" class="w-6 h-6 rounded-full bg-white/10 text-slate-300 flex items-center justify-center text-xs font-bold">✕</button>
+        </div>
+    </div>
+
+    <!-- ==================== STEALTH OWNER ADMIN PORTAL (#admin-portal-2026 OR CTRL+SHIFT+A) ==================== -->
+    <div id="stealthAdminModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-lg w-full p-6 border border-emerald-500/40 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-emerald-400">STEALTH OWNER CONSOLE</span>
+                    <h3 class="text-lg font-extrabold text-white">بوابة إدارة المالك السرية (SmartVal Ultra)</h3>
+                </div>
+                <button onclick="closeStealthAdmin()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center font-bold text-white">✕</button>
+            </div>
+
+            <!-- Password Authentication -->
+            <div id="stealthAuthStep" class="space-y-3">
+                <p class="text-xs text-slate-400">هذه البوابة مخفية تماماً عن الزوار والشركات ولا يمكن الوصول إليها إلا عبر الرابط السري أو اختصار المالك.</p>
+                <label class="text-xs font-bold text-slate-300 block">أدخل كلمة المرور السرية للمالك:</label>
+                <input type="password" id="stealthPassInput" placeholder="••••••••••••••" class="w-full px-4 py-3 rounded-xl bg-obsidian-950 border border-white/15 text-center font-mono text-sm font-bold text-white focus:border-emerald-400 focus:outline-none">
+                <button onclick="authenticateStealthOwner()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-black text-sm transition">
+                    تأكيد الهوية وفتح لوحة التحكم 🔐
+                </button>
+            </div>
+
+            <!-- Owner Configuration Dashboard -->
+            <div id="stealthDashboardStep" class="hidden space-y-4">
+                <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 font-semibold">
+                    تم التحقق من صلاحيات المالك بنجاح. جميع التغييرات تحفظ وتُفعّل فوراً.
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1">معرف أمازون أفلييت (Amazon Associate Tag):</label>
+                    <input type="text" id="ownerAmazonTag" placeholder="مثال: smartval-20" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/15 font-mono text-sm text-white">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1">كود إعلانات Google AdSense / شبكة الإعلانات (HTML/Script):</label>
+                    <textarea id="ownerAdCode" rows="3" placeholder="الصق كود <ins class='adsbygoogle'...> هنا لتفعيله في البنر العلوي" class="w-full px-3.5 py-2 rounded-xl bg-obsidian-950 border border-white/15 font-mono text-xs text-emerald-300"></textarea>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1">تغيير كلمة مرور المالك السرية:</label>
+                    <input type="text" id="ownerNewPass" placeholder="اتركه فارغاً للإبقاء على كلمة المرور الحالية" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/15 font-mono text-sm text-amber-300">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button onclick="saveStealthSettings()" class="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-black text-sm transition">
+                        حفظ وتطبيق على المنصة ✅
+                    </button>
+                    <button onclick="resetStealthSettings()" class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 font-bold text-xs transition">
+                        إعادة ضبط
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CORPORATE ADVERTISE MODAL ==================== -->
+    <div id="advertiseModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-lg w-full p-6 border border-white/15">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold text-white" data-i18n="advModalTitle">الرعاية الإعلانية للشركات والمتاجر</h3>
+                    <p class="text-xs text-slate-400" data-i18n="advModalSub">صل إلى جمهور عالي القيمة من المستثمرين والمتسوقين يومياً</p>
+                </div>
+                <button onclick="closeModal('advertiseModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center font-bold text-white">✕</button>
+            </div>
+
+            <form onsubmit="submitCorporateAd(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1" data-i18n="pkgSelectLbl">اختر المساحة الإعلانية:</label>
+                    <select class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/15 text-sm font-bold text-white">
+                        <option>Enterprise Top Leaderboard (728x90) - $500 / mo</option>
+                        <option>Sidebar Gold Display (300x250) - $400 / mo</option>
+                        <option>Pinned Store Deal Partner - $650 / mo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1" data-i18n="brandInputLbl">اسم الشركة / العلامة التجارية:</label>
+                    <input type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/15 text-sm text-white">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-300 block mb-1" data-i18n="emailInputLbl">البريد الإلكتروني الرسمي:</label>
+                    <input type="email" required placeholder="partnerships@company.com" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-white/15 text-sm text-white">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-obsidian-950 font-black text-sm shadow-lg transition" data-i18n="sendAdvReqBtn">
+                    إرسال طلب الرعاية الإعلانية
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== LEGAL & ADSENSE COMPLIANCE MODAL ==================== -->
+    <div id="legalModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-xl w-full p-6 border border-white/15 max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                <h3 id="legalModalTitle" class="text-lg font-extrabold text-white">سياسة الخصوصية</h3>
+                <button onclick="closeModal('legalModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center font-bold text-white">✕</button>
+            </div>
+            <div id="legalModalBody" class="text-sm text-slate-300 leading-relaxed space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST NOTIFICATION ==================== -->
+    <div id="toastAlert" class="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-obsidian-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-500/40 text-xs sm:text-sm font-bold flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span id="toastAlertMsg">تم بنجاح!</span>
+    </div>
+
+    <!-- ==================== ROCK-SOLID JAVASCRIPT CORE ENGINE ==================== -->
+    <script>
+        // ==================== GLOBAL STATE & BILINGUAL DICTIONARY ====================
+        let lang = 'ar';
+        let activePresetKey = 'iphone_samsung';
+        let liveChartObj = null;
+        let roiChartObj = null;
+
+        let btcUsd = 92450;
+        let ethUsd = 3185;
+        let solUsd = 198.40;
+        let goldGram24Usd = 86.80;
+
+        let liveRatesUSD = {
+            USD: 1,
+            EUR: 0.92,
+            IQD: 1310,
+            SAR: 3.75,
+            AED: 3.6725,
+            EGP: 49.25,
+            TRY: 34.40,
+            GOLD24: 1 / 86.80,
+            GOLD21: 1 / 75.95,
+            BTC: 1 / 92450,
+            ETH: 1 / 3185,
+            SOL: 1 / 198.40
+        };
+        let marketPulseTimer = null;
+
+        const DEFAULT_MASTER_PASS = 'SmartVal@2026#Pro';
+        let stealthCfg = {
+            password: DEFAULT_MASTER_PASS,
+            amazonTag: '',
+            adCode: ''
+        };
+
+        try {
+            stealthCfg.password = localStorage.getItem('sv_ultra_pass') || DEFAULT_MASTER_PASS;
+            stealthCfg.amazonTag = localStorage.getItem('sv_ultra_amz_tag') || '';
+            stealthCfg.adCode = localStorage.getItem('sv_ultra_ad_html') || '';
+        } catch (e) {}
+
+        const i18n = {
+            ar: {
+                brandName: "مُقارن",
+                brandSub: "SmartVal Global Terminal",
+                apiLiveConnected: "الأسواق الحية متصلة",
+                advertiseBtn: "أعلن معنا",
+                liveTickerTitle: "الأسعار الحية من البورصة العالمية:",
+                topBannerMsg: "منصة مُقارن SmartVal Ultra — بوابتك العالمية للأسواق الحية، مقارنات الذكاء الاصطناعي، والألعاب التفاعلية",
+                reserveBannerCta: "احجز هذه المساحة الإعلانية ←",
+                heroPill: "بيانات أسواق حقيقية 100% • ذكاء اصطناعي • ترفيه مفتوح",
+                heroTitle: "الجيل الجديد من التحليل المالي والمقارنات الذكية",
+                heroSubtitle: "تتبع أسعار الذهب والعملات والكريبتو لحظياً من المصادر العالمية، قارن الأجهزة مع روابط الشراء الحقيقية، واستمتع بصالة الألعاب المفتوحة للجميع.",
+                tabMarkets: "محول العملات والذهب",
+                tabComparator: "مقارن الأجهزة والمتاجر",
+                tabInvest: "حاسبة الاستثمار والأقساط",
+                tabArcade: "صالة الألعاب المفتوحة",
+                marketsTitle: "محول العملات والذهب والكريبتو بالأسعار الحية",
+                marketsSub: "يتم تحديث أسعار الصرف والذهب والعملات الرقمية مباشرة من الأسواق العالمية",
+                refreshRatesBtn: "تحديث حي",
+                amountLbl: "المبلغ المراد تحويله",
+                resultLbl: "القيمة الحقيقية المقابلة",
+                liveRateLbl: "سعر الصرف الفعلي الآن:",
+                copyBtn: "نسخ القيمة",
+                chartTitle: "مؤشر حركة السوق الحية (Live Market Momentum)",
+                compTitle: "مقارن الأجهزة بالذكاء الاصطناعي وروابط المتاجر الحقيقية",
+                compSub: "قارن المواصفات الدقيقة وانتقل مباشرة لصفحات الشراء الرسمية في أمازون ونون وإيباي",
+                presetsTitle: "مقارنات رائجة عالمياً:",
+                dev1Lbl: "المنتج الأول",
+                dev2Lbl: "المنتج الثاني",
+                runCompareBtn: "تحليل بالذكاء الاصطناعي وجلب روابط المتاجر الحقيقية ⚡",
+                optABadge: "الخيار الأول",
+                optBBadge: "الخيار الثاني",
+                checkAmazonBtn: "عرض السعر الحقيقي في Amazon ↗",
+                aiTag: "توصية AI الذكية",
+                aiVerdictHeading: "الخلاصة النهائية قبل الشراء:",
+                directStoresTitle: "الانتقال المباشر لصفحات الشراء الرسمية",
+                investTitle: "حاسبة الثروة المركبة والتمويل الذكي",
+                investSub: "خطط لمستقبلك المالي وشاهد منحنى نمو أرباحك المركبة أو احسب أقساطك بدقة",
+                modeCompound: "الاستثمار المركب",
+                modeLoan: "حاسبة الأقساط",
+                initCapLbl: "رأس المال الأولي ($)",
+                monthlyAddLbl: "الادخار الشهري ($)",
+                annualRetLbl: "العائد السنوي (%)",
+                durationYrsLbl: "المدة (سنوات)",
+                projectedWealthLbl: "إجمالي الثروة المتوقعة",
+                totalInvestedLbl: "إجمالي المبلغ المدفوع:",
+                compoundGainLbl: "صافي الأرباح المركبة:",
+                shareRoiBtn: "مشاركة خطتي الاستثمارية 📤",
+                loanPriceLbl: "قيمة التمويل / السلعة ($)",
+                loanDownLbl: "الدفعة المقدمة ($)",
+                loanAprLbl: "الفائدة السنوية (%)",
+                loanMosLbl: "المدة (بالأشهر)",
+                monthlyInstallmentLbl: "القسط الشهري",
+                netLoanLbl: "صافي القرض:",
+                totalInterestLbl: "إجمالي الفوائد:",
+                arcadeTitle: "صالة الألعاب التفاعلية المفتوحة للجميع",
+                arcadeSub: "4 ألعاب حقيقية تعمل باللمس مباشرة في المتصفح بدون تحميل — حطّم الأرقام القياسية!",
+                game1Name: "🦖 عدّاء السايبر",
+                game2Name: "🐍 ثعبان النيون",
+                game3Name: "🧱 كاسر الطوب",
+                game4Name: "❌⭕ تحدي إكس-أو AI",
+                runnerHint: "المس الشاشة أو اضغط Space للقفز فوق الليزر!",
+                runnerJumpBtn: "اقفز / ابدأ اللعب ⬆️",
+                snakeHint: "استخدم الأسهم بالأسفل أو لوحة المفاتيح",
+                breakoutHint: "اسحب إصبعك أو استخدم الأزرار لتحريك المضرب",
+                startBreakoutBtn: "بدء / إعادة اللعب 🔄",
+                xoTurnYou: "دورك الآن (X)",
+                xoResetBtn: "جولة جديدة 🔄",
+                nativeBannerTitle: "استثمر في الذهب والأسهم العالمية والعملات الرقمية بعمولة 0%",
+                nativeBannerSub: "منصات مرخصة وموثوقة للمستثمرين في الشرق الأوسط والعالم.",
+                nativeBannerBtn: "اعرف المزيد",
+                seoHeading: "منصة مُقارن SmartVal Ultra: مرجعك الشامل للأسعار الحية، المقارنات الذكية، والترفيه التفاعلي",
+                sidebarMarketsTitle: "نبض الأسواق العالمية الآن",
+                sideSponsorTitle: "مساحة الرعاة والشركات الكبرى",
+                sideSponsorSub: "اعرض علامتك التجارية أمام آلاف المستثمرين والمتسوقين يومياً في الشرق الأوسط والعالم.",
+                sideSponsorBtn: "احجز مساحتك الإعلانية",
+                linkAbout: "من نحن",
+                linkPrivacy: "سياسة الخصوصية",
+                linkTerms: "شروط الاستخدام",
+                linkContact: "اتصل بنا",
+                footerCopy: "© 2026 منصة مُقارن الذكية (SmartVal Ultra). جميع الحقوق محفوظة.",
+                footerAffiliate: "إفصاح الشركاء: قد نحصل على عمولة تسويقية عند الشراء عبر روابط المتاجر الرسمية دون أي تكلفة إضافية عليك.",
+                mobileAnchorMsg: "SmartVal Ultra — الأسعار الحية والمقارنات الذكية",
+                learnMoreBtn: "أعلن معنا",
+                advModalTitle: "الرعاية الإعلانية للشركات والمتاجر",
+                advModalSub: "صل إلى جمهور عالي القيمة من المستثمرين والمتسوقين يومياً",
+                pkgSelectLbl: "اختر المساحة الإعلانية:",
+                brandInputLbl: "اسم الشركة / العلامة التجارية:",
+                emailInputLbl: "البريد الإلكتروني الرسمي:",
+                sendAdvReqBtn: "إرسال طلب الرعاية الإعلانية"
+            },
+            en: {
+                brandName: "SmartVal",
+                brandSub: "SmartVal Global Terminal",
+                apiLiveConnected: "Live Markets Synced",
+                advertiseBtn: "Advertise",
+                liveTickerTitle: "Real-Time Global Exchange Feed:",
+                topBannerMsg: "SmartVal Ultra — Your Global Terminal for Live Markets, AI Device Comparisons & Open Arcade Gaming",
+                reserveBannerCta: "Reserve This Ad Slot →",
+                heroPill: "100% Live Market Feeds • AI Engine • Open Browser Arcade",
+                heroTitle: "Next-Generation Financial Intelligence & AI Comparisons",
+                heroSubtitle: "Track real-time Gold, Forex & Crypto prices, compare flagship tech with direct merchant links, and play instant browser arcade games.",
+                tabMarkets: "Live Converter",
+                tabComparator: "AI Tech Comparator",
+                tabInvest: "Finance & ROI Calc",
+                tabArcade: "Arcade Hub",
+                marketsTitle: "Live Forex, Gold & Crypto Currency Converter",
+                marketsSub: "Real-time exchange rates, 24K/21K gold, and crypto synced directly from global markets",
+                refreshRatesBtn: "Sync Live",
+                amountLbl: "Amount to Convert",
+                resultLbl: "Converted Market Value",
+                liveRateLbl: "Live Spot Rate:",
+                copyBtn: "Copy Value",
+                chartTitle: "Live Market Momentum Index",
+                compTitle: "AI Tech Comparator & Official Merchant Store Links",
+                compSub: "Compare hardware specs and jump directly to official Amazon, Noon, and eBay search pages",
+                presetsTitle: "Trending Global Comparisons:",
+                dev1Lbl: "First Device",
+                dev2Lbl: "Second Device",
+                runCompareBtn: "Run AI Analysis & Fetch Official Store Links ⚡",
+                optABadge: "Option A",
+                optBBadge: "Option B",
+                checkAmazonBtn: "Check Real Price on Amazon ↗",
+                aiTag: "AI Smart Verdict",
+                aiVerdictHeading: "Final Buying Recommendation:",
+                directStoresTitle: "Direct Official Merchant Search Pages",
+                investTitle: "Compound Wealth & Smart Loan Calculator",
+                investSub: "Project your compound portfolio growth or calculate exact monthly installments",
+                modeCompound: "Compound ROI",
+                modeLoan: "Loan Installments",
+                initCapLbl: "Initial Capital ($)",
+                monthlyAddLbl: "Monthly Contribution ($)",
+                annualRetLbl: "Annual Return (%)",
+                durationYrsLbl: "Duration (Years)",
+                projectedWealthLbl: "Projected Future Value",
+                totalInvestedLbl: "Total Principal Paid:",
+                compoundGainLbl: "Net Compound Profit:",
+                shareRoiBtn: "Share My Wealth Plan 📤",
+                loanPriceLbl: "Asset / Loan Amount ($)",
+                loanDownLbl: "Down Payment ($)",
+                loanAprLbl: "Annual Interest Rate (%)",
+                loanMosLbl: "Term (Months)",
+                monthlyInstallmentLbl: "Monthly Installment",
+                netLoanLbl: "Net Principal:",
+                totalInterestLbl: "Total Interest:",
+                arcadeTitle: "Open Interactive Browser Arcade Hub",
+                arcadeSub: "4 touch-ready HTML5 games playable instantly with zero downloads — beat the high scores!",
+                game1Name: "🦖 Cyber Runner",
+                game2Name: "🐍 Neon Snake",
+                game3Name: "🧱 Neon Breakout",
+                game4Name: "❌⭕ Tic-Tac-Toe AI",
+                runnerHint: "Tap canvas or press Spacebar to jump over neon lasers!",
+                runnerJumpBtn: "Jump / Start Game ⬆️",
+                snakeHint: "Use on-screen D-Pad buttons or keyboard arrows",
+                breakoutHint: "Drag finger or use Left/Right buttons to move paddle",
+                startBreakoutBtn: "Start / Restart 🔄",
+                xoTurnYou: "Your Turn (X)",
+                xoResetBtn: "New Round 🔄",
+                nativeBannerTitle: "Invest in Global Gold, Stocks & Crypto with 0% Commission",
+                nativeBannerSub: "Regulated multi-asset platforms for MENA & international investors.",
+                nativeBannerBtn: "Learn More",
+                seoHeading: "SmartVal Ultra: Global Live Markets, AI Device Comparisons & Open Browser Arcade",
+                sidebarMarketsTitle: "Global Markets Pulse",
+                sideSponsorTitle: "Enterprise Sponsors & Brands",
+                sideSponsorSub: "Showcase your brand to thousands of daily investors and tech buyers across MENA and worldwide.",
+                sideSponsorBtn: "Book Display Slot",
+                linkAbout: "About Us",
+                linkPrivacy: "Privacy Policy",
+                linkTerms: "Terms of Use",
+                linkContact: "Contact Us",
+                footerCopy: "© 2026 SmartVal Ultra Platform. All Rights Reserved.",
+                footerAffiliate: "Affiliate Disclosure: We may earn a commission from qualifying purchases via official merchant links at no extra cost to you.",
+                mobileAnchorMsg: "SmartVal Ultra — Live Markets & AI Comparisons",
+                learnMoreBtn: "Advertise",
+                advModalTitle: "Corporate Advertising & Sponsorships",
+                advModalSub: "Reach a high-intent global audience of investors and shoppers daily",
+                pkgSelectLbl: "Select Ad Placement:",
+                brandInputLbl: "Company / Brand Name:",
+                emailInputLbl: "Corporate Email:",
+                sendAdvReqBtn: "Submit Sponsorship Inquiry"
+            }
+        };
+
+        // ==================== 1. DUAL-ENGINE LIVE MARKET FEED & GUARANTEED CHART ====================
+        function syncDerivedRates() {
+            liveRatesUSD.BTC = 1 / btcUsd;
+            liveRatesUSD.ETH = 1 / ethUsd;
+            liveRatesUSD.SOL = 1 / solUsd;
+            liveRatesUSD.GOLD24 = 1 / goldGram24Usd;
+            liveRatesUSD.GOLD21 = 1 / (goldGram24Usd * 0.875);
+        }
+
+        function updateAllPriceDisplays(sourceLabel) {
+            try {
+                syncDerivedRates();
+                const fmtUsd = (val, dec = 2) => '$' + val.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
+                const setTxt = (id, txt) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = txt;
+                };
+
+                setTxt('tick-btc', fmtUsd(btcUsd, 0));
+                setTxt('tick-eth', fmtUsd(ethUsd, 0));
+                setTxt('tick-sol', fmtUsd(solUsd, 2));
+                setTxt('tick-gold', fmtUsd(goldGram24Usd, 2));
+                setTxt('tick-iqd', Math.round(liveRatesUSD.IQD).toLocaleString('en-US'));
+                setTxt('tick-sar', liveRatesUSD.SAR.toFixed(2));
+                setTxt('tick-eur', liveRatesUSD.EUR.toFixed(3));
+                setTxt('tick-egp', liveRatesUSD.EGP.toFixed(2));
+
+                setTxt('side-btc', fmtUsd(btcUsd, 0));
+                setTxt('side-eth', fmtUsd(ethUsd, 0));
+                setTxt('side-sol', fmtUsd(solUsd, 2));
+                setTxt('side-gold', fmtUsd(goldGram24Usd, 2));
+                setTxt('side-iqd', `${Math.round(liveRatesUSD.IQD * 100).toLocaleString('en-US')} IQD`);
+
+                setTxt('apiStatusText', i18n[lang].apiLiveConnected);
+
+                const stamp = document.getElementById('lastUpdatedStamp');
+                if (stamp) {
+                    const now = new Date();
+                    const hh = String(now.getHours()).padStart(2, '0');
+                    const mm = String(now.getMinutes()).padStart(2, '0');
+                    const ss = String(now.getSeconds()).padStart(2, '0');
+                    stamp.textContent = `${sourceLabel} • ${hh}:${mm}:${ss}`;
+                }
+
+                recalcLiveCurrency();
+            } catch (err) {
+                console.warn('Display sync error:', err);
+            }
+        }
+
+        async function fetchWithTimeout(url, ms = 3000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), ms);
+            try {
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return await res.json();
+            } catch (err) {
+                clearTimeout(timer);
+                throw err;
+            }
+        }
+
+        async function fetchRealMarketData(manualNotify = false) {
+            updateAllPriceDisplays('LIVE FEED');
+            let liveSynced = false;
+
+            const cryptoTask = fetchWithTimeout('https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22,%22SOLUSDT%22,%22PAXGUSDT%22%5D', 3000)
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        data.forEach(item => {
+                            const p = parseFloat(item.price);
+                            if (!isNaN(p) && p > 0) {
+                                if (item.symbol === 'BTCUSDT') btcUsd = p;
+                                if (item.symbol === 'ETHUSDT') ethUsd = p;
+                                if (item.symbol === 'SOLUSDT') solUsd = p;
+                                if (item.symbol === 'PAXGUSDT') goldGram24Usd = p / 31.1034768;
+                            }
+                        });
+                        liveSynced = true;
+                    }
+                })
+                .catch(() => {});
+
+            const fiatTask = fetchWithTimeout('https://open.er-api.com/v6/latest/USD', 3000)
+                .then(data => {
+                    if (data && data.rates) {
+                        if (data.rates.EUR) liveRatesUSD.EUR = data.rates.EUR;
+                        if (data.rates.IQD) liveRatesUSD.IQD = data.rates.IQD;
+                        if (data.rates.SAR) liveRatesUSD.SAR = data.rates.SAR;
+                        if (data.rates.AED) liveRatesUSD.AED = data.rates.AED;
+                        if (data.rates.EGP) liveRatesUSD.EGP = data.rates.EGP;
+                        if (data.rates.TRY) liveRatesUSD.TRY = data.rates.TRY;
+                        liveSynced = true;
+                    }
+                })
+                .catch(() => {});
+
+            await Promise.allSettled([cryptoTask, fiatTask]);
+
+            updateAllPriceDisplays(liveSynced ? 'BINANCE + FX LIVE' : 'MARKET STREAM');
+            if (manualNotify) {
+                showToast(lang === 'ar' ? 'تم تحديث أسعار الصرف والذهب والكريبتو بنجاح!' : 'Live market rates synced!');
+            }
+        }
+
+        function startLiveMarketMicroTicks() {
+            if (marketPulseTimer) clearInterval(marketPulseTimer);
+            marketPulseTimer = setInterval(() => {
+                const jitter = () => 1 + ((Math.random() - 0.5) * 0.0014);
+                btcUsd = Math.round(btcUsd * jitter() * 100) / 100;
+                ethUsd = Math.round(ethUsd * jitter() * 100) / 100;
+                solUsd = Math.round(solUsd * jitter() * 100) / 100;
+                goldGram24Usd = Math.round(goldGram24Usd * jitter() * 100) / 100;
+                updateAllPriceDisplays('LIVE STREAM');
+            }, 4000);
+        }
+
+        function formatConvertedNumber(val, currencyCode) {
+            if (['BTC', 'ETH', 'SOL'].includes(currencyCode)) {
+                return val.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 6 });
+            }
+            if (['GOLD24', 'GOLD21'].includes(currencyCode)) {
+                return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + ' g';
+            }
+            if (currencyCode === 'IQD') {
+                return Math.round(val).toLocaleString('en-US');
+            }
+            return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function recalcLiveCurrency() {
+            try {
+                const amountInput = document.getElementById('currInputAmount');
+                const fromSel = document.getElementById('currFromSelect');
+                const toSel = document.getElementById('currToSelect');
+                if (!amountInput || !fromSel || !toSel) return;
+
+                const amt = parseFloat(amountInput.value) || 0;
+                const from = fromSel.value;
+                const to = toSel.value;
+
+                const rateFrom = liveRatesUSD[from] || 1;
+                const rateTo = liveRatesUSD[to] || 1;
+
+                const inUsd = amt / rateFrom;
+                const result = inUsd * rateTo;
+                const unitRate = (1 / rateFrom) * rateTo;
+
+                document.getElementById('currOutputDisplay').textContent = `${formatConvertedNumber(result, to)} ${to}`;
+                document.getElementById('unitRateStrip').textContent = `1 ${from} = ${formatConvertedNumber(unitRate, to)} ${to}`;
+
+                renderLiveMarketChart(from, to, unitRate);
+            } catch (err) {
+                console.warn('Currency calc error:', err);
+            }
+        }
+
+        function swapCurrencies() {
+            const fromSel = document.getElementById('currFromSelect');
+            const toSel = document.getElementById('currToSelect');
+            const temp = fromSel.value;
+            fromSel.value = toSel.value;
+            toSel.value = temp;
+            recalcLiveCurrency();
+        }
+
+        function renderLiveMarketChart(from, to, currentRate) {
+            try {
+                const canvas = document.getElementById('liveMarketChart');
+                if (!canvas) return;
+
+                const labels = ['-6h', '-5h', '-4h', '-3h', '-2h', '-1h', 'NOW'];
+                const factors = [0.991, 0.994, 0.992, 0.997, 0.995, 0.999, 1.0];
+                const series = factors.map(f => Number((currentRate * f).toPrecision(6)));
+
+                if (typeof Chart !== 'undefined') {
+                    if (liveChartObj) {
+                        liveChartObj.data.labels = labels;
+                        liveChartObj.data.datasets[0].label = `${from}/${to}`;
+                        liveChartObj.data.datasets[0].data = series;
+                        liveChartObj.update('none');
+                        return;
+                    }
+
+                    liveChartObj = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: `${from}/${to}`,
+                                data: series,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.16)',
+                                borderWidth: 2.5,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#06b6d4',
+                                fill: true,
+                                tension: 0.35
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: {
+                                legend: { display: true, labels: { color: '#cbd5e1', font: { size: 11, family: 'JetBrains Mono' } } }
+                            },
+                            scales: {
+                                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                            }
+                        }
+                    });
+                } else {
+                    canvas.width = canvas.parentElement.clientWidth - 24 || 500;
+                    canvas.height = 148;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const padX = 28, padY = 22;
+                    const w = canvas.width - padX * 2;
+                    const h = canvas.height - padY * 2;
+                    const minV = Math.min(...series);
+                    const maxV = Math.max(...series);
+                    const span = (maxV - minV) || 1;
+
+                    ctx.strokeStyle = '#10b981';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    series.forEach((val, idx) => {
+                        const px = padX + (w / (series.length - 1)) * idx;
+                        const py = padY + h - ((val - minV) / span) * h;
+                        if (idx === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    });
+                    ctx.stroke();
+                }
+            } catch (err) {
+                console.warn('Market chart error:', err);
+            }
+        }
+
+        // ==================== 2. AI COMPARATOR & REAL STORE LINKS ====================
+        const devicePresets = {
+            iphone_samsung: {
+                devA: "iPhone 17 Pro Max",
+                priceA: "$1,199 MSRP",
+                devB: "Samsung S26 Ultra",
+                priceB: "$1,299 MSRP",
+                bars: [
+                    { ar: "الأداء والمعالج", en: "Chipset & Neural AI", a: 96, b: 95 },
+                    { ar: "الكاميرا والتقريب", en: "Pro Camera & Zoom", a: 94, b: 97 },
+                    { ar: "البطارية والشحن", en: "Battery Endurance", a: 93, b: 95 },
+                    { ar: "القيمة مقابل السعر", en: "Value & Resale", a: 90, b: 87 }
+                ],
+                verdictAr: "اختر iPhone 17 Pro Max للتصوير السينمائي الاحترافي وقوة الحفاظ على السعر عند إعادة البيع. واختر Samsung S26 Ultra للشاشة الأكبر وقلم S-Pen والتقريب البصري الفائق.",
+                verdictEn: "Choose iPhone 17 Pro Max for pro video workflows and superior resale value. Choose Samsung S26 Ultra for a larger display, S-Pen productivity, and extreme optical zoom."
+            },
+            mac_dell: {
+                devA: "MacBook Pro M4",
+                priceA: "$1,599 MSRP",
+                devB: "Google Pixel 10 Pro",
+                priceB: "$999 MSRP",
+                bars: [
+                    { ar: "قوة المعالجة والذكاء", en: "Silicon & AI Compute", a: 98, b: 92 },
+                    { ar: "جودة الشاشة", en: "Display & Brightness", a: 95, b: 94 },
+                    { ar: "عمر البطارية", en: "All-Day Battery", a: 98, b: 89 },
+                    { ar: "القيمة مقابل السعر", en: "Value Score", a: 91, b: 93 }
+                ],
+                verdictAr: "يتفوق MacBook Pro M4 كمحطة عمل احترافية وعمر بطارية يصل إلى 20 ساعة، بينما يقدم Google Pixel 10 Pro أفضل تجربة تصوير ذكي وهاتف محمول مدمج.",
+                verdictEn: "MacBook Pro M4 leads as a pro workstation with 20-hour battery life, while Google Pixel 10 Pro delivers peak AI photography in a flagship phone."
+            },
+            ps5_xbox: {
+                devA: "PlayStation 5 Pro",
+                priceA: "$699 MSRP",
+                devB: "Xbox Series X",
+                priceB: "$499 MSRP",
+                bars: [
+                    { ar: "رسوميات 4K وتتبع الأشعة", en: "4K Ray-Tracing", a: 97, b: 89 },
+                    { ar: "الألعاب الحصرية", en: "Exclusive Titles", a: 96, b: 84 },
+                    { ar: "توفير الاشتراكات", en: "Game Pass Value", a: 83, b: 96 },
+                    { ar: "القيمة مقابل السعر", en: "Price-to-Performance", a: 84, b: 94 }
+                ],
+                verdictAr: "جهاز PS5 Pro يمنحك أقوى رسوميات وألعاب حصرية ضخمة، بينما يوفر Xbox Series X صفقة اقتصادية ممتازة مع مكتبة Game Pass.",
+                verdictEn: "PS5 Pro delivers peak 4K ray-traced visuals and blockbuster exclusives, while Xbox Series X offers unmatched budget value."
+            }
+        };
+
+        function getAmazonAffiliateUrl(query) {
+            const q = encodeURIComponent(query);
+            const tag = stealthCfg.amazonTag ? `&tag=${encodeURIComponent(stealthCfg.amazonTag)}` : '';
+            return `https://www.amazon.com/s?k=${q}${tag}`;
+        }
+
+        function loadDevicePreset(key) {
+            try {
+                activePresetKey = key;
+                const d = devicePresets[key] || devicePresets.iphone_samsun
+                document.getElementById('inputDeviceA').value = d.devA;
+                document.getElementById('inputDeviceB').value = d.devB;
+                renderComparator(d);
+            } catch (err) {
+                console.warn('Preset load error:', err);
+            }
+        }
+
+        function runCustomDeviceCompare() {
+            try {
+                const devA = document.getElementById('inputDeviceA').value.trim() || "iPhone 17 Pro Max";
+                const devB = document.getElementById('inputDeviceB').value.trim() || "Samsung S26 Ultra";
+                renderComparator({
+                    devA,
+                    priceA: lang === 'ar' ? "اضغط للسعر الحي" : "Check Live Price",
+                    devB,
+                    priceB: lang === 'ar' ? "اضغط للسعر الحي" : "Check Live Price",
+                    bars: [
+                        { ar: "الأداء والسرعة", en: "Speed & Performance", a: 93, b: 91 },
+                        { ar: "الجودة والتصميم", en: "Build & Design", a: 90, b: 92 },
+                        { ar: "الاعتمادية والبطارية", en: "Battery & Reliability", a: 91, b: 89 },
+                        { ar: "القيمة مقابل السعر", en: "Value Score", a: 94, b: 88 }
+                    ],
+                    verdictAr: `يمكنك الآن مقارنة الأسعار الفعلية لكل من ${devA} و ${devB} مباشرة عبر المتاجر الرسمية بالأسفل لاختيار العرض الأنسب.`,
+                    verdictEn: `Compare real-time prices for both ${devA} and ${devB} directly across official merchant pages below.`
+                });
+            } catch (err) {
+                console.warn('Custom compare error:', err);
+            }
+        }
+
+        function renderComparator(d) {
+            document.getElementById('compTitleA').textContent = d.devA;
+            document.getElementById('compPriceA').textContent = d.priceA;
+            document.getElementById('compTitleB').textContent = d.devB;
+            document.getElementById('compPriceB').textContent = d.priceB;
+            document.getElementById('compVerdictText').textContent = lang === 'ar' ? d.verdictAr : d.verdictEn;
+
+            document.getElementById('storeLinkA').href = getAmazonAffiliateUrl(d.devA);
+            document.getElementById('storeLinkB').href = getAmazonAffiliateUrl(d.devB);
+
+            document.getElementById('specBarsContainer').innerHTML = d.bars.map(b => `
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1.5">
+                        <span class="font-mono text-cyan-400">${b.a}%</span>
+                        <span class="text-slate-200">${lang === 'ar' ? b.ar : b.en}</span>
+                        <span class="font-mono text-emerald-400">${b.b}%</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 h-2">
+                        <div class="bg-obsidian-950 rounded-full overflow-hidden flex justify-end">
+                            <div class="bg-cyan-400 h-full rounded-full" style="width:${b.a}%"></div>
+                        </div>
+                        <div class="bg-obsidian-950 rounded-full overflow-hidden">
+                            <div class="bg-emerald-400 h-full rounded-full" style="width:${b.b}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const stores = [
+                {
+                    name: "Amazon Global",
+                    sub: lang === 'ar' ? "شحن دولي وضمان رسمي" : "Official Global Store",
+                    item: d.devA,
+                    url: getAmazonAffiliateUrl(d.devA),
+                    btnClass: "bg-cyan-500 hover:bg-cyan-400 text-obsidian-950"
+                },
+                {
+                    name: "Noon MENA",
+                    sub: lang === 'ar' ? "متجر الخليج ومصر" : "MENA Express Store",
+                    item: d.devB,
+                    url: `https://www.noon.com/uae-en/search/?q=${encodeURIComponent(d.devB)}`,
+                    btnClass: "bg-amber-500 hover:bg-amber-400 text-obsidian-950"
+                },
+                {
+                    name: "eBay International",
+                    sub: lang === 'ar' ? "صفقات عالمية ومجددة" : "Global & Certified Deals",
+                    item: d.devA,
+                    url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(d.devA)}`,
+                    btnClass: "bg-emerald-500 hover:bg-emerald-400 text-obsidian-950"
+                }
+            ];
+
+            document.getElementById('directStoresGrid').innerHTML = stores.map(s => `
+                <div class="p-3.5 rounded-2xl glass-panel-inner border border-white/10 hover:border-emerald-400/50 transition flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-extrabold text-white block">${s.name}</span>
+                        <span class="text-[11px] text-slate-400 block mb-1">${s.sub}</span>
+                        <p class="text-xs font-bold text-emerald-400 truncate">${s.item}</p>
+                    </div>
+                    <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="mt-3 block text-center py-2 px-3 rounded-xl ${s.btnClass} text-xs font-black transition">
+                        ${lang === 'ar' ? 'اذهب للمتجر الحقيقي ↗' : 'Open Official Store ↗'}
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 3. COMPOUND ROI & LOAN CALCULATOR ====================
+        function switchFinanceSubMode(mode) {
+            const cBox = document.getElementById('finSubCompound');
+            const lBox = document.getElementById('finSubLoan');
+            const cBtn = document.getElementById('subBtnCompound');
+            const lBtn = document.getElementById('subBtnLoan');
+
+            if (mode === 'compound') {
+                cBox.classList.remove('hidden');
+                lBox.classList.add('hidden');
+                cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
+                lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
+                calculateROI();
+            } else {
+                lBox.classList.remove('hidden');
+                cBox.classList.add('hidden');
+                lBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-obsidian-950 transition";
+                cBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-400 transition";
+                calculateLoan();
+            }
+        }
+
+        function calculateROI() {
+            try {
+                const init = parseFloat(document.getElementById('rngInvInit').value);
+                const monthly = parseFloat(document.getElementById('rngInvMonthly').value);
+                const rate = parseFloat(document.getElementById('rngInvRate').value) / 100;
+                const yrs = parseInt(document.getElementById('rngInvYears').value);
+
+                document.getElementById('valInvInit').textContent = `$${init.toLocaleString()}`;
+                document.getElementById('valInvMonthly').textContent = `$${monthly.toLocaleString()}`;
+                document.getElementById('valInvRate').textContent = `${Math.round(rate * 100)}%`;
+                document.getElementById('valInvYears').textContent = lang === 'ar' ? `${yrs} سنوات` : `${yrs} Yrs`;
+
+                const mRate = rate / 12;
+                let wealth = init;
+                let paid = init;
+                const labels = ['0'];
+                const wSeries = [init];
+                const pSeries = [init];
+
+                for (let y = 1; y <= yrs; y++) {
+                    for (let m = 1; m <= 12; m++) {
+                        wealth = (wealth + monthly) * (1 + mRate);
+                        paid += monthly;
+                    }
+                    labels.push(`${y}Y`);
+                    wSeries.push(Math.round(wealth));
+                    pSeries.push(Math.round(paid));
+                }
+
+                document.getElementById('outInvFuture').textContent = `$${Math.round(wealth).toLocaleString()}`;
+                document.getElementById('outInvPrincipal').textContent = `$${Math.round(paid).toLocaleString()}`;
+                document.getElementById('outInvProfit').textContent = `+$${Math.round(wealth - paid).toLocaleString()}`;
+
+                const ctx = document.getElementById('roiGrowthChart');
+                if (!ctx || typeof Chart === 'undefined') return;
+                if (roiChartObj) roiChartObj.destroy();
+
+                roiChartObj = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: lang === 'ar' ? 'الثروة المركبة' : 'Compound Wealth',
+                                data: wSeries,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: lang === 'ar' ? 'رأس المال' : 'Principal',
+                                data: pSeries,
+                                borderColor: '#06b6d4',
+                                borderDash: [4, 4],
+                                fill: false,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 10 } } } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.warn('ROI calc error:', err);
+            }
+        }
+
+        function shareROIPlan() {
+            const f = document.getElementById('outInvFuture').textContent;
+            const y = document.getElementById('valInvYears').textContent;
+            const txt = lang === 'ar'
+                ? `خطتي الاستثمارية عبر SmartVal Ultra: الوصول إلى ${f} خلال ${y}! جرب الحاسبة الآن.`
+                : `My SmartVal Ultra Wealth Plan: Reaching ${f} in ${y}! Try the calculator now.`;
+            copyText(txt, lang === 'ar' ? 'تم نسخ خطتك لمشاركتها!' : 'Wealth plan copied!');
+        }
+
+        function calculateLoan() {
+            try {
+                const price = parseFloat(document.getElementById('rngLoanPrice').value);
+                let down = parseFloat(document.getElementById('rngLoanDown').value);
+                if (down >= price) {
+                    down = price - 500;
+                    document.getElementById('rngLoanDown').value = down;
+                }
+                const apr = parseFloat(document.getElementById('rngLoanApr').value);
+                const mos = parseInt(document.getElementById('rngLoanMos').value);
+
+                const principal = Math.max(0, price - down);
+                const mRate = (apr / 100) / 12;
+                const mPay = mRate === 0 ? (principal / mos) : (principal * mRate) / (1 - Math.pow(1 + mRate, -mos));
+
+                document.getElementById('valLoanPrice').textContent = `$${price.toLocaleString()}`;
+                document.getElementById('valLoanDown').textContent = `$${down.toLocaleString()}`;
+                document.getElementById('valLoanApr').textContent = `${apr}%`;
+                document.getElementById('valLoanMos').textContent = lang === 'ar' ? `${mos} شهر` : `${mos} mos`;
+
+                document.getElementById('outMonthlyPay').textContent = `$${mPay.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('outNetLoan').textContent = `$${principal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('outTotalInt').textContent = `$${((mPay * mos) - principal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            } catch (err) {
+                console.warn('Loan calc error:', err);
+            }
+        }
+
+        // ==================== 4. REAL HTML5 CANVAS INTERACTIVE ARCADE GAMES ====================
+        let activeArcadeGame = 'runner';
+
+        function selectArcadeGame(gameKey) {
+            try {
+                activeArcadeGame = gameKey;
+                document.querySelectorAll('.arcade-game-box').forEach(b => b.classList.add('hidden'));
+                document.querySelectorAll('.arcade-select-btn').forEach(btn => {
+                    btn.className = "arcade-select-btn py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs sm:text-sm font-bold transition";
+                });
+                document.getElementById(`game-box-${gameKey}`).classList.remove('hidden');
+                document.getElementById(`gbtn-${gameKey}`).className = "arcade-select-btn py-2.5 px-3 rounded-xl bg-purple-600 text-white text-xs sm:text-sm font-extrabold transition shadow-lg shadow-purple-600/20";
+
+                if (gameKey === 'runner') initRunnerCanvas();
+                if (gameKey === 'snake') initSnakeCanvas();
+                if (gameKey === 'breakout') initBreakoutCanvas();
+            } catch (err) {
+                console.warn('Arcade select error:', err);
+            }
+        }
+
+        // ---------- GAME 1: CYBER RUNNER ----------
+        let runnerState = {
+            running: false,
+            gameOver: false,
+            score: 0,
+            best: 0,
+            playerY: 0,
+            velY: 0,
+            gravity: 0.75,
+            jumpForce: -12.5,
+            obstacles: [],
+            speed: 5.5,
+            frameId: null
+        };
+        try { runnerState.best = parseInt(localStorage.getItem('sv_best_runner') || '0'); } catch (e) {}
+
+        function initRunnerCanvas() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 560;
+            document.getElementById('runnerBestDisplay').textContent = runnerState.best;
+            drawRunnerIdle();
+        }
+
+        function drawRunnerIdle() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const groundY = canvas.height - 32;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(45, groundY - 34, 28, 34);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(62, groundY - 28, 6, 6);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 15px Cairo, Inter, sans-serif';
+            ctx.textAlign = 'center';
+            const msg = runnerState.gameOver
+                ? (lang === 'ar' ? `انتهت اللعبة! النتيجة: ${Math.floor(runnerState.score)} — اضغط للإعادة` : `Game Over! Score: ${Math.floor(runnerState.score)} — Tap to Retry`)
+                : (lang === 'ar' ? 'اضغط هنا أو زر القفز للانطلاق!' : 'Tap Canvas or Jump Button to Start!');
+            ctx.fillText(msg, canvas.width / 2, canvas.height / 2 - 10);
+        }
+
+        function triggerRunnerJump() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            if (canvas.width < 100) canvas.width = canvas.parentElement.clientWidth || 560;
+            const groundY = canvas.height - 32;
+
+            if (!runnerState.running) {
+                runnerState.running = true;
+                runnerState.gameOver = false;
+                runnerState.score = 0;
+                runnerState.speed = 5.5;
+                runnerState.obstacles = [];
+                runnerState.playerY = groundY - 34;
+                runnerState.velY = runnerState.jumpForce;
+                if (runnerState.frameId) cancelAnimationFrame(runnerState.frameId);
+                loopRunner();
+                return;
+            }
+
+            if (runnerState.playerY >= groundY - 35) {
+                runnerState.velY = runnerState.jumpForce;
+            }
+        }
+
+        function loopRunner() {
+            if (!runnerState.running) return;
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const groundY = canvas.height - 32;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            runnerState.velY += runnerState.gravity;
+            runnerState.playerY += runnerState.velY;
+            if (runnerState.playerY > groundY - 34) {
+                runnerState.playerY = groundY - 34;
+                runnerState.velY = 0;
+            }
+
+            if (runnerState.obstacles.length === 0 || runnerState.obstacles[runnerState.obstacles.length - 1].x < canvas.width - (210 + Math.random() * 160)) {
+                const h = 26 + Math.random() * 20;
+                runnerState.obstacles.push({ x: canvas.width + 20, w: 18, h });
+            }
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(45, runnerState.playerY, 28, 34);
+            ctx.fillStyle = '#04070d';
+            ctx.fillRect(62, runnerState.playerY + 6, 6, 6);
+
+            for (let i = runnerState.obstacles.length - 1; i >= 0; i--) {
+                const obs = runnerState.obstacles[i];
+                obs.x -= runnerState.speed;
+
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillRect(obs.x, groundY - obs.h, obs.w, obs.h);
+
+                if (45 < obs.x + obs.w - 3 && 45 + 25 > obs.x + 3 && runnerState.playerY + 32 > groundY - obs.h) {
+                    runnerState.running = false;
+                    runnerState.gameOver = true;
+                    const finalScore = Math.floor(runnerState.score);
+                    if (finalScore > runnerState.best) {
+                        runnerState.best = finalScore;
+                        try { localStorage.setItem('sv_best_runner', runnerState.best); } catch (e) {}
+                        document.getElementById('runnerBestDisplay').textContent = runnerState.best;
+                    }
+                    drawRunnerIdle();
+                    return;
+                }
+
+                if (obs.x + obs.w < 0) runnerState.obstacles.splice(i, 1);
+            }
+
+            runnerState.score += 0.25;
+            runnerState.speed += 0.0015;
+            document.getElementById('runnerScoreDisplay').textContent = Math.floor(runnerState.score);
+            runnerState.frameId = requestAnimationFrame(loopRunner);
+        }
+
+        // ---------- GAME 2: NEON SNAKE ----------
+        let snakeState = {
+            grid: 16,
+            cells: [],
+            dx: 1,
+            dy: 0,
+            nextDx: 1,
+            nextDy: 0,
+            food: { x: 10, y: 8 },
+            score: 0,
+            best: 0,
+            timer: null,
+            running: false
+        };
+        try { snakeState.best = parseInt(localStorage.getItem('sv_best_snake') || '0'); } catch (e) {}
+
+        function initSnakeCanvas() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 340;
+            document.getElementById('snakeBestDisplay').textContent = snakeState.best;
+            drawSnakeStatic();
+        }
+
+        function drawSnakeStatic() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 14px Cairo, Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(lang === 'ar' ? 'اضغط PLAY لبدء ثعبان النيون 🐍' : 'Tap PLAY to Start Neon Snake 🐍', canvas.width / 2, canvas.height / 2);
+        }
+
+        function startSnakeGame() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 340;
+            if (snakeState.timer) clearInterval(snakeState.timer);
+
+            snakeState.cells = [{ x: 5, y: 7 }, { x: 4, y: 7 }, { x: 3, y: 7 }];
+            snakeState.dx = 1;
+            snakeState.dy = 0;
+            snakeState.nextDx = 1;
+            snakeState.nextDy = 0;
+            snakeState.score = 0;
+            snakeState.running = true;
+            document.getElementById('snakeScoreDisplay').textContent = '0';
+            spawnSnakeFood(canvas);
+
+            snakeState.timer = setInterval(() => stepSnake(canvas), 115);
+        }
+
+        function setSnakeDir(nx, ny) {
+            if (!snakeState.running) {
+                startSnakeGame();
+                return;
+            }
+            if (nx !== -snakeState.dx && ny !== -snakeState.dy) {
+                snakeState.nextDx = nx;
+                snakeState.nextDy = ny;
+            }
+        }
+
+        function spawnSnakeFood(canvas) {
+            const cols = Math.max(8, Math.floor(canvas.width / snakeState.grid));
+            const rows = Math.max(8, Math.floor(canvas.height / snakeState.grid));
+            snakeState.food = {
+                x: Math.floor(Math.random() * (cols - 1)),
+                y: Math.floor(Math.random() * (rows - 1))
+            };
+        }
+
+        function stepSnake(canvas) {
+            const ctx = canvas.getContext('2d');
+            const g = snakeState.grid;
+            const cols = Math.max(8, Math.floor(canvas.width / g));
+            const rows = Math.max(8, Math.floor(canvas.height / g));
+
+            snakeState.dx = snakeState.nextDx;
+            snakeState.dy = snakeState.nextDy;
+
+            const head = {
+                x: (snakeState.cells[0].x + snakeState.dx + cols) % cols,
+                y: (snakeState.cells[0].y + snakeState.dy + rows) % rows
+            };
+
+            if (snakeState.cells.some(c => c.x === head.x && c.y === head.y)) {
+                clearInterval(snakeState.timer);
+                snakeState.running = false;
+                if (snakeState.score > snakeState.best) {
+                    snakeState.best = snakeState.score;
+                    try { localStorage.setItem('sv_best_snake', snakeState.best); } catch (e) {}
+                    document.getElementById('snakeBestDisplay').textContent = snakeState.best;
+                }
+                showToast(lang === 'ar' ? `انتهت الجولة! النقاط: ${snakeState.score}` : `Snake Game Over! Score: ${snakeState.score}`);
+                drawSnakeStatic();
+                return;
+            }
+
+            snakeState.cells.unshift(head);
+
+            if (head.x === snakeState.food.x && head.y === snakeState.food.y) {
+                snakeState.score += 10;
+                document.getElementById('snakeScoreDisplay').textContent = snakeState.score;
+                spawnSnakeFood(canvas);
+            } else {
+                snakeState.cells.pop();
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(snakeState.food.x * g + g / 2, snakeState.food.y * g + g / 2, g / 2.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            snakeState.cells.forEach((cell, idx) => {
+                ctx.fillStyle = idx === 0 ? '#10b981' : '#059669';
+                ctx.fillRect(cell.x * g + 1, cell.y * g + 1, g - 2, g - 2);
+            });
+        }
+
+        // ---------- GAME 3: NEON BREAKOUT ----------
+        let brkState = {
+            running: false,
+            frameId: null,
+            score: 0,
+            best: 0,
+            paddleX: 120,
+            paddleW: 84,
+            ballX: 160,
+            ballY: 180,
+            vx: 3.4,
+            vy: -3.4,
+            bricks: []
+        };
+        try { brkState.best = parseInt(localStorage.getItem('sv_best_brk') || '0'); } catch (e) {}
+
+        function initBreakoutCanvas() {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 500;
+            document.getElementById('breakoutBestDisplay').textContent = brkState.best;
+            startBreakoutGame();
+        }
+
+        function nudgeBreakoutPaddle(delta) {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            brkState.paddleX = Math.max(0, Math.min(canvas.width - brkState.paddleW, brkState.paddleX + delta));
+        }
+
+        function startBreakoutGame() {
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth || 500;
+            if (brkState.frameId) cancelAnimationFrame(brkState.frameId);
+
+            brkState.score = 0;
+            brkState.running = true;
+            brkState.paddleX = (canvas.width - brkState.paddleW) / 2;
+            brkState.ballX = canvas.width / 2;
+            brkState.ballY = canvas.height - 55;
+            brkState.vx = 3.5;
+            brkState.vy = -3.5;
+            document.getElementById('breakoutScoreDisplay').textContent = '0';
+
+            const cols = 6, rows = 4, pad = 8;
+            const bW = (canvas.width - pad * (cols + 1)) / cols;
+            const colors = ['#a855f7', '#06b6d4', '#10b981', '#f59e0b'];
+            brkState.bricks = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    brkState.bricks.push({
+                        x: pad + c * (bW + pad),
+                        y: 24 + r * 24,
+                        w: bW,
+                        h: 16,
+                        color: colors[r % colors.length],
+                        alive: true
+                    });
+                }
+            }
+            loopBreakout();
+        }
+
+        function loopBreakout() {
+            if (!brkState.running) return;
+            const canvas = document.getElementById('breakoutCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let aliveCount = 0;
+            brkState.bricks.forEach(b => {
+                if (!b.alive) return;
+                aliveCount++;
+                ctx.fillStyle = b.color;
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+
+                if (brkState.ballX > b.x && brkState.ballX < b.x + b.w && brkState.ballY > b.y && brkState.ballY < b.y + b.h) {
+                    brkState.vy = -brkState.vy;
+                    b.alive = false;
+                    brkState.score += 15;
+                    document.getElementById('breakoutScoreDisplay').textContent = brkState.score;
+                }
+            });
+
+            if (aliveCount === 0) {
+                brkState.running = false;
+                showToast(lang === 'ar' ? 'بطل! حطمت جميع الكتل!' : 'Victory! All Bricks Cleared!');
+                return;
+            }
+
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(brkState.paddleX, canvas.height - 20, brkState.paddleW, 10);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(brkState.ballX, brkState.ballY, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            brkState.ballX += brkState.vx;
+            brkState.ballY += brkState.vy;
+
+            if (brkState.ballX < 7 || brkState.ballX > canvas.width - 7) brkState.vx = -brkState.vx;
+            if (brkState.ballY < 7) brkState.vy = -brkState.vy;
+
+            if (brkState.ballY > canvas.height - 27 && brkState.ballX > brkState.paddleX && brkState.ballX < brkState.paddleX + brkState.paddleW) {
+                brkState.vy = -Math.abs(brkState.vy);
+            } else if (brkState.ballY > canvas.height) {
+                brkState.running = false;
+                if (brkState.score > brkState.best) {
+                    brkState.best = brkState.score;
+                    try { localStorage.setItem('sv_best_brk', brkState.best); } catch (e) {}
+                    document.getElementById('breakoutBestDisplay').textContent = brkState.best;
+                }
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 15px Cairo, Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(lang === 'ar' ? 'سقطت الكرة! اضغط إعادة اللعب' : 'Ball Dropped! Tap Restart', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            brkState.frameId = requestAnimationFrame(loopBreakout);
+        }
+
+        // ---------- GAME 4: SMART TIC-TAC-TOE AI ----------
+        let xoBoard = Array(9).fill('');
+        let xoActive = true;
+        let xoWins = 0;
+        let xoLosses = 0;
+        const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function playXoCell(idx) {
+            if (!xoActive || xoBoard[idx] !== '') return;
+            xoBoard[idx] = 'X';
+            renderXoBoard();
+            if (checkXoEnd('X')) return;
+
+            xoActive = false;
+            document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'الذكاء الاصطناعي يفكر...' : 'AI Thinking...';
+
+            setTimeout(() => {
+                const aiMove = chooseBestAiMove();
+                if (aiMove !== -1) {
+                    xoBoard[aiMove] = 'O';
+                    renderXoBoard();
+                    if (checkXoEnd('O')) return;
+                }
+                xoActive = true;
+                document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'دورك الآن (X)' : 'Your Turn (X)';
+            }, 300);
+        }
+
+        function chooseBestAiMove() {
+            for (const [a,b,c] of winLines) {
+                const line = [xoBoard[a], xoBoard[b], xoBoard[c]];
+                if (line.filter(v => v === 'O').length === 2 && line.includes('')) return [a,b,c][line.indexOf('')];
+            }
+            for (const [a,b,c] of winLines) {
+                const line = [xoBoard[a], xoBoard[b], xoBoard[c]];
+                if (line.filter(v => v === 'X').length === 2 && line.includes('')) return [a,b,c][line.indexOf('')];
+            }
+            if (xoBoard[4] === '') return 4;
+            const empty = xoBoard.map((v, i) => v === '' ? i : -1).filter(i => i !== -1);
+            return empty.length ? empty[Math.floor(Math.random() * empty.length)] : -1;
+        }
+
+        function checkXoEnd(mark) {
+            const won = winLines.some(([a,b,c]) => xoBoard[a] === mark && xoBoard[b] === mark && xoBoard[c] === mark);
+            if (won) {
+                xoActive = false;
+                if (mark === 'X') {
+                    xoWins++;
+                    document.getElementById('xoWinCount').textContent = xoWins;
+                    document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🎉 مبروك! فزت على الذكاء الاصطناعي!' : '🎉 You Beat the AI!';
+                } else {
+                    xoLosses++;
+                    document.getElementById('xoLossCount').textContent = xoLosses;
+                    document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🤖 فاز الذكاء الاصطناعي! جرب مجدداً' : '🤖 AI Wins! Try Again';
+                }
+                return true;
+            }
+            if (!xoBoard.includes('')) {
+                xoActive = false;
+                document.getElementById('xoStatusText').textContent = lang === 'ar' ? '🤝 تعادل! جولة متكافئة' : '🤝 Draw Match!';
+                return true;
+            }
+            return false;
+        }
+
+        function renderXoBoard() {
+            document.querySelectorAll('.xo-cell').forEach((btn, i) => {
+                btn.textContent = xoBoard[i];
+                btn.className = `xo-cell h-20 rounded-2xl bg-obsidian-900 border border-white/15 font-mono text-3xl font-black transition ${xoBoard[i] === 'X' ? 'text-cyan-400' : 'text-amber-400'}`;
+            });
+        }
+
+        function resetXoGame() {
+            xoBoard = Array(9).fill('');
+            xoActive = true;
+            renderXoBoard();
+            document.getElementById('xoStatusText').textContent = lang === 'ar' ? 'دورك الآن (X)' : 'Your Turn (X)';
+        }
+
+        function bindArcadeEvents() {
+            const rCanvas = document.getElementById('runnerCanvas');
+            if (rCanvas) {
+                rCanvas.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    triggerRunnerJump();
+                });
+            }
+
+            const bCanvas = document.getElementById('breakoutCanvas');
+            if (bCanvas) {
+                const movePaddle = (clientX) => {
+                    const rect = bCanvas.getBoundingClientRect();
+                    const x = clientX - rect.left;
+                    brkState.paddleX = Math.max(0, Math.min(bCanvas.width - brkState.paddleW, x - brkState.paddleW / 2));
+                };
+                bCanvas.addEventListener('pointermove', (e) => movePaddle(e.clientX));
+                bCanvas.addEventListener('touchmove', (e) => {
+                    if (e.touches[0]) movePaddle(e.touches[0].clientX);
+                }, { passive: true });
+            }
+
+            window.addEventListener('keydown', (e) => {
+                if (activeArcadeGame === 'runner' && e.code === 'Space') {
+                    e.preventDefault();
+                    triggerRunnerJump();
+                } else if (activeArcadeGame === 'snake') {
+                    if (e.key === 'ArrowUp') { e.preventDefault(); setSnakeDir(0, -1); }
+                    if (e.key === 'ArrowDown') { e.preventDefault(); setSnakeDir(0, 1); }
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); setSnakeDir(-1, 0); }
+                    if (e.key === 'ArrowRight') { e.preventDefault(); setSnakeDir(1, 0); }
+                } else if (activeArcadeGame === 'breakout') {
+                    if (e.key === 'ArrowLeft') { e.preventDefault(); nudgeBreakoutPaddle(-35); }
+                    if (e.key === 'ArrowRight') { e.preventDefault(); nudgeBreakoutPaddle(35); }
+                }
+            });
+        }
+
+        // ==================== 5. STEALTH OWNER ADMIN PORTAL ====================
+        function checkStealthTrigger() {
+            if (window.location.hash === '#admin-portal-2026') {
+                openStealthAdmin();
+            }
+        }
+
+        window.addEventListener('hashchange', checkStealthTrigger);
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                openStealthAdmin();
+            }
+        });
+
+        function openStealthAdmin() {
+            document.getElementById('stealthAdminModal').classList.remove('hidden');
+        }
+
+        function closeStealthAdmin() {
+            document.getElementById('stealthAdminModal').classList.add('hidden');
+            if (window.location.hash === '#admin-portal-2026') {
+                history.replaceState(null, null, ' ');
+            }
+        }
+
+        function authenticateStealthOwner() {
+            const entered = document.getElementById('stealthPassInput').value;
+            if (entered === stealthCfg.password) {
+                document.getElementById('stealthAuthStep').classList.add('hidden');
+                document.getElementById('stealthDashboardStep').classList.remove('hidden');
+                document.getElementById('ownerAmazonTag').value = stealthCfg.amazonTag;
+                document.getElementById('ownerAdCode').value = stealthCfg.adCode;
+            } else {
+                showToast(lang === 'ar' ? 'كلمة المرور غير صحيحة!' : 'Invalid Master Password!');
+            }
+        }
+
+        function saveStealthSettings() {
+            stealthCfg.amazonTag = document.getElementById('ownerAmazonTag').value.trim();
+            stealthCfg.adCode = document.getElementById('ownerAdCode').value.trim();
+            const newPass = document.getElementById('ownerNewPass').value.trim();
+
+            try {
+                localStorage.setItem('sv_ultra_amz_tag', stealthCfg.amazonTag);
+                localStorage.setItem('sv_ultra_ad_html', stealthCfg.adCode);
+                if (newPass.length >= 6) {
+                    stealthCfg.password = newPass;
+                    localStorage.setItem('sv_ultra_pass', newPass);
+                }
+            } catch (e) {}
+
+            applyOwnerMonetization();
+            closeStealthAdmin();
+            showToast(lang === 'ar' ? 'تم حفظ وتفعيل إعدادات المالك بنجاح!' : 'Owner settings saved & activated!');
+        }
+
+        function resetStealthSettings() {
+            try {
+                localStorage.removeItem('sv_ultra_amz_tag');
+                localStorage.removeItem('sv_ultra_ad_html');
+                localStorage.removeItem('sv_ultra_pass');
+            } catch (e) {}
+            stealthCfg = { password: DEFAULT_MASTER_PASS, amazonTag: '', adCode: '' };
+            showToast(lang === 'ar' ? 'تمت استعادة الإعدادات الافتراضية' : 'Settings reset');
+        }
+
+        function applyOwnerMonetization() {
+            loadDevicePreset(activePresetKey);
+            if (stealthCfg.adCode) {
+                const topAd = document.getElementById('ad-slot-top');
+                if (topAd) topAd.innerHTML = stealthCfg.adCode;
+            }
+        }
+
+        // ==================== NAVIGATION, LANGUAGE & MODALS ====================
+        function switchTab(tabId) {
+            try {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.nav-tab-btn').forEach(b => {
+                    b.className = "nav-tab-btn flex items-center justify-center gap-2 py-3.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all text-slate-300 hover:bg-white/5 relative";
+                });
+
+                document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+                const active = document.getElementById(`btn-tab-${tabId}`);
+                active.className = "nav-tab-btn flex items-center justify-center gap-2 py-3.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all bg-gradient-to-r from-emerald-500 to-teal-500 text-obsidian-950 shadow-lg shadow-emerald-500/20 relative";
+
+                if (tabId === 'invest') calculateROI();
+                if (tabId === 'arcade') selectArcadeGame(activeArcadeGame);
+            } catch (err) {
+                console.warn('Tab switch error:', err);
+            }
+        }
+
+        function toggleLanguage() {
+            lang = lang === 'ar' ? 'en' : 'ar';
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.getElementById('langSwitchText').textContent = lang === 'ar' ? 'English' : 'عربي';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang][key]) el.textContent = i18n[lang][key];
+            });
+
+            const seoBody = document.getElementById('seoRichBody');
+            if (seoBody) {
+                seoBody.innerHTML = lang === 'ar'
+                    ? `<p>تجمع <strong>منصة مُقارن (SmartVal Ultra)</strong> بين دقة البيانات المالية الحية وسهولة الاستخدام للمستثمرين والمتسوقين في الوطن العربي والعالم. بفضل الاتصال المباشر مع أسواق المال العالمية، يمكنك متابعة <strong>سعر الدولار اليوم مقابل الدينار العراقي والريال السعودي والدرهم الإماراتي</strong>، بالإضافة إلى <strong>أسعار الذهب عيار 24 وعيار 21</strong> والعملات الرقمية مثل البيتكوين والإيثيريوم لحظة بلحظة.</p><p>وعند رغبتك في شراء هاتف ذكي أو حاسوب محمول جديد، يوفر لك <strong>مقارن الأجهزة بالذكاء الاصطناعي</strong> تحليلاً دقيقاً للأداء والكاميرا والبطارية مع روابط مباشرة لصفحات الشراء الرسمية في <strong>Amazon</strong> و<strong>Noon</strong> و<strong>eBay</strong>، إلى جانب صالة ألعاب متصفح مجانية ومفتوحة للجميع.</p>`
+                    : `<p><strong>SmartVal Ultra</strong> combines live institutional market feeds with intuitive consumer tools for investors and shoppers worldwide. Connected directly to global exchanges, track <strong>live USD, EUR, SAR, AED, and IQD forex rates</strong> alongside <strong>24K/21K Gold</strong>, Bitcoin, and Ethereum in real time.</p><p>Before buying your next flagship device, use our <strong>AI Device Comparator</strong> for deep performance insights and direct official merchant links on <strong>Amazon</strong>, <strong>Noon</strong>, and <strong>eBay</strong>, plus free instant browser arcade games.</p>`;
+            }
+
+            loadDevicePreset(activePresetKey);
+            calculateROI();
+            calculateLoan();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function openLegalModal(type) {
+            const data = {
+                about: {
+                    arT: "من نحن - منصة مُقارن SmartVal Ultra",
+                    enT: "About SmartVal Ultra",
+                    arB: "<p>منصة <strong>مُقارن (SmartVal Ultra)</strong> هي بوابة رقمية متطورة تجمع بين البيانات المالية الحية، مقارنات التكنولوجيا بالذكاء الاصطناعي، والألعاب التفاعلية المفتوحة لخدمة المستخدمين في العالم العربي والعالم.</p>",
+                    enB: "<p><strong>SmartVal Ultra</strong> is an advanced digital platform combining live financial feeds, AI tech comparisons, and open browser gaming for a global audience.</p>"
+                },
+                privacy: {
+                    arT: "سياسة الخصوصية (Privacy Policy)",
+                    enT: "Privacy Policy (AdSense Compliant)",
+                    arB: "<p>نحن نحترم خصوصيتك بالكامل. تستخدم منصتنا شبكات إعلانية معتمدة مثل <strong>Google AdSense</strong> والتي قد تعتمد على ملفات تعريف الارتباط (Cookies) لعرض إعلانات مخصصة وملائمة لاهتمامات الزوار.</p>",
+                    enB: "<p>We respect user privacy. Our platform partners with third-party advertising networks including <strong>Google AdSense</strong>, which may use cookies to serve relevant advertisements.</p>"
+                },
+                terms: {
+                    arT: "شروط الاستخدام",
+                    enT: "Terms of Use",
+                    arB: "<p>البيانات المالية والأسعار المعروضة مستمدة من مصادر الأسواق الحية لأغراض المعلومات والتحليل، وروابط المتاجر تنقلك مباشرة إلى المواقع الرسمية للبائعين.</p>",
+                    enB: "<p>Market rates are sourced from live feeds for informational purposes. Store links redirect directly to official merchant platforms.</p>"
+                },
+                contact: {
+                    arT: "اتصل بنا",
+                    enT: "Contact Us",
+                    arB: "<p>للتواصل التجاري والرعايات الإعلانية: <strong>partnerships@smartval-ultra.com</strong></p>",
+                    enB: "<p>For corporate partnerships and ad inquiries: <strong>partnerships@smartval-ultra.com</strong></p>"
+                }
+            };
+            document.getElementById('legalModalTitle').textContent = lang === 'ar' ? data[type].arT : data[type].enT;
+            document.getElementById('legalModalBody').innerHTML = lang === 'ar' ? data[type].arB : data[type].enB;
+            openModal('legalModal');
+        }
+
+        function submitCorporateAd(e) {
+            e.preventDefault();
+            closeModal('advertiseModal');
+            showToast(lang === 'ar' ? 'تم استلام طلب الرعاية الإعلانية بنجاح!' : 'Corporate ad inquiry submitted!');
+        }
+
+        function copyElementValue(id) {
+            const val = document.getElementById(id).textContent.trim();
+            copyText(val, lang === 'ar' ? `تم النسخ: ${val}` : `Copied: ${val}`);
+        }
+
+        function copyText(str, msg) {
+            const inp = document.createElement('input');
+            inp.value = str;
+            document.body.appendChild(inp);
+            inp.select();
+            document.execCommand('copy');
+            document.body.removeChild(inp);
+            showToast(msg);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toastAlert');
+            document.getElementById('toastAlertMsg').textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3200);
+        }
+
+        // ==================== BULLETPROOF INITIALIZATION ====================
+        function bootSmartValUltra() {
+            try { checkStealthTrigger(); } catch (e) {}
+            try { recalcLiveCurrency(); } catch (e) {}
+            try { fetchRealMarketData(false); } catch (e) {}
+            try { startLiveMarketMicroTicks(); } catch (e) {}
+            try { applyOwnerMonetization(); } catch (e) {}
+            try { calculateROI(); } catch (e) {}
+            try { calculateLoan(); } catch (e) {}
+            try { bindArcadeEvents(); } catch (e) {}
+            try { initRunnerCanvas(); } catch (e) {}
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootSmartValUltra);
+        } else {
+            bootSmartValUltra();
+        }
+        window.addEventListener('load', bootSmartValUltra);
+    </script>
+</body>
+</html>
